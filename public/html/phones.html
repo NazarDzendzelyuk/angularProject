@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="row goods">
+        <div class="col-md-4 item" ng-repeat='phone in phones | filter:search | orderBy:sortByPrice | startFrom:currentPage*pageSize | limitTo:pageSize '>
+            <a href=""><img src='../img/phone.png' style="width: 87px"></a>
+            <h6>{{phone.name}}</h6>
+            <h6>Price: {{phone.price}} $</h6>
+
+            <div class="goods--moreInfo">
+                <h6>Display: {{phone.display}} inches</h6>
+                <h6>Camera: {{phone.camera}} MP</h6>
+                <h6>RAM: {{phone.ram}} GB</h6>
+                <h6 class="details"><a href="">Details...</a></h6>
+            </div>
+        </div>
+
+    </div>
+    <!--    PAGINATION-->
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1" id="previousPage" class="btn btn-submit" scroll-on-click href="#scroll">Previous</button> {{currentPage+1}}/{{numberOfPages()}}
+            <button ng-disabled="currentPage >= getPhones().length/pageSize - 1" ng-click="currentPage=currentPage+1" id="nextPage" class="btn btn-submit" scroll-on-click href="#scroll">Next</button>
+        </div>
+    </div>
+</body>
+
+</html>

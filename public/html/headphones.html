@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="row goods">
+        <div class="col-md-4 item headphones" ng-repeat='headphone in headphones | filter:search | orderBy:sortByPrice | startFrom:currentPage*pageSize | limitTo:pageSize '>
+            <a href=""><img src='../img/headphone.png'></a>
+            <h6>{{headphone.name}}</h6>
+            <h6>Price: {{headphone.price}} $</h6>
+            <div class="goods--moreInfo">
+                <h6>Weight: {{headphone.weight}} pounds</h6>
+                <h6>Connection: {{headphone.connection}} </h6>
+                <h6 class="details"><a href="">Details...</a></h6>
+            </div>
+        </div>
+    </div>
+    <!--    PAGINATION-->
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1" id="previousPage" class="btn btn-submit" scroll-on-click href="#scroll">Previous</button> {{currentPage+1}}/{{numberOfPages()}}
+            <button ng-disabled="currentPage >= getHeadPhones().length/pageSize - 1" ng-click="currentPage=currentPage+1" class="btn btn-submit" scroll-on-click href="#scroll">Next</button>
+
+        </div>
+    </div>
+</body>
+
+</html>

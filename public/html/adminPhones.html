@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container text-center">
+        <div class="row container-category">
+            <div class="col-md-2"></div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="newName">Name:</label>
+                    <input type="text" class="form-control" id="newName" ng-model='newName'>
+                    <label for="newPrice">Price:</label>
+                    <input type="text" class="form-control" id="newPrice" ng-model='newPrice'>
+                    <label for="newDisplay">Display:</label>
+                    <input type="text" class="form-control" id="newDisplay" ng-model='newDisplay'>
+                    <label for="newCamera">Camera:</label>
+                    <input type="text" class="form-control" id="newCamera" ng-model='newCamera'>
+                    <label for="newRam">Ram:</label>
+                    <input type="text" class="form-control" id="newRam" ng-model='newRam'>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-6">
+                <button class="btn btn-primary" ng-click='addNewPhone()'>Add</button>
+            </div>
+        </div>
+        <hr>
+              <div class="row">
+            <div class="col-md-2"><h5> Name</h5></div>
+            <div class="col-md-1"><h5>Price</h5></div>
+            <div class="col-md-1"><h5>Display</h5></div>
+            <div class="col-md-1"><h5>Camera</h5></div>
+            <div class="col-md-1"><h5>Ram</h5></div>
+                  <div class="col-md-2"><h5>Delete</h5></div>
+            <div class="col-md-2"><h5>Edit</h5></div>
+        </div>
+        <div class="row" ng-repeat='phone in phones'>
+            <div class="col-md-2">{{phone.name}}</div>
+            <div class="col-md-1">{{phone.price}}</div>
+            <div class="col-md-1">{{phone.display}}</div>
+            <div class="col-md-1">{{phone.camera}}</div>
+            <div class="col-md-1">{{phone.ram}}</div>
+            <div class="col-md-2"><button class="btn btn-danger">Delete</button></div>
+            <div class="col-md-2"><button class="btn btn-warning">Edit</button></div>
+        </div>
+    </div>
+</body>
+
+</html>

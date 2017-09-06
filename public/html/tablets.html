@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="row goods ">
+        <div class="col-md-4 item tablets" ng-repeat='tablet in tablets | filter:search | orderBy:sortByPrice | startFrom:currentPage*pageSize | limitTo:pageSize '>
+            <a href=""><img src='../img/tablet.png' style="width: 90px"></a>
+            <h6>{{tablet.name}}</h6>
+            <h6>Price: {{tablet.price}} $</h6>
+
+            <div class="goods--moreInfo">
+                <h6>Display: {{tablet.display}} inches</h6>
+                <h6>RAM {{tablet.RAM}} GB</h6>
+                <a href="">
+                    <h6 class="details">Details...</h6>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!--    PAGINATION-->
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1" id="previousPage" class="btn btn-submit" scroll-on-click href="#scroll">Previous</button> {{currentPage+1}}/{{numberOfPages()}}
+            <button ng-disabled="currentPage >= getTablets().length/pageSize - 1" ng-click="currentPage=currentPage+1" class="btn btn-submit" scroll-on-click href="#scroll">Next</button>
+        </div>
+    </div>
+</body>
+
+</html>
