@@ -15,17 +15,14 @@
 
             <div class="goods--moreInfo">
                 <h6>Display: {{tablet.display}} inches</h6>
-                <h6>RAM {{tablet.RAM}} GB</h6>
-                <a href="">
-                    <h6 class="details">Details...</h6>
-                </a>
+                <h6>RAM {{tablet.ram}} GB</h6>
             </div>
         </div>
     </div>
     <!--    PAGINATION-->
     <div class="row">
         <div class="col-md-12 text-center">
-            <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1" id="previousPage" class="btn btn-submit" scroll-on-click href="#scroll">Previous</button> {{currentPage+1}}/{{numberOfPages()}}
+            <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1" id="previousPage" class="btn btn-submit" scroll-on-click href="#scroll">Previous</button> {{currentPage+1}}/{{numberOfTabletPages()}}
             <button ng-disabled="currentPage >= getTablets().length/pageSize - 1" ng-click="currentPage=currentPage+1" class="btn btn-submit" scroll-on-click href="#scroll">Next</button>
         </div>
     </div>

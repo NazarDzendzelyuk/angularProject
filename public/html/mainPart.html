@@ -1,0 +1,65 @@
+<section class="main-section">
+    <main>
+        <h1 class="text-center">The store</h1>
+        <div class="row text-center filter">
+            <div class="col-md-3">
+                <label>Sort by price
+                    <select ng-model='sortByPrice'>
+                        <option value="-price">price: high to low</option>
+                        <option value="price">price: low to high</option>
+                    </select>
+                </label>
+            </div>
+            <div class="col-md-5" id="scroll">
+                <div id="search">
+                    <div class="input-group stylish-input-group">
+                        <input type="text" class="form-control text-center searchInput" placeholder="Search" ng-model='search'>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 showBy">
+                <label>Show
+                         <select ng-model='pageSize' ng-options='item for item in limitRange'>
+                         </select> elements</label>
+            </div>
+        </div>
+        <div class="row items ">
+            <div class="col-md-3 items-chat">
+                <h3 class="text-center">Chat</h3>
+                <form name="chatForm" novalidate>
+                    <div class="message">
+                        <div class="input-group stylish-input-group">
+                            <input type="text" class="form-control name" placeholder="Type your name" ng-model='name' name="name" required>
+
+                        </div>
+                    </div><button class="btn btn-submit" ng-click='changeName()' ng-disabled='chatForm.name.$error.required'>Ok</button>
+                    <span ng-show="chatForm.name.$touched && chatForm.name.$error.required" style="color: red">Can't be empty</span>
+                    <div class="chatBox">
+                        <p ng-repeat='message in messages'>{{message.date}} <b>{{message.username}}:</b> {{message.message}}</p>
+                    </div>
+                    <div class="message">
+                        <div class="input-group stylish-input-group">
+                            <input type="text" class="form-control" placeholder="Type your message" ng-model='message' name="message" required>
+                        </div>
+                    </div><button class="btn btn-submit" ng-click='sendMessage()' ng-disabled='chatForm.$invalid'>Send</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <ng-view>
+
+                </ng-view>
+            </div>
+
+            <div class="col-md-2 categories">
+                <h3>Categories</h3>
+                <ul>
+                    <li ng-repeat='category in categories'><a ng-click={{category.source}}>{{category.name}}</a></li>
+                </ul>
+            </div>
+        </div>
+    </main>
+</section>
+<hr>
+<section>
+    <footer class="footer"></footer>
+</section>

@@ -15,14 +15,13 @@
             <div class="goods--moreInfo">
                 <h6>Weight: {{headphone.weight}} pounds</h6>
                 <h6>Connection: {{headphone.connection}} </h6>
-                <h6 class="details"><a href="">Details...</a></h6>
             </div>
         </div>
     </div>
     <!--    PAGINATION-->
     <div class="row">
         <div class="col-md-12 text-center">
-            <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1" id="previousPage" class="btn btn-submit" scroll-on-click href="#scroll">Previous</button> {{currentPage+1}}/{{numberOfPages()}}
+            <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1" id="previousPage" class="btn btn-submit" scroll-on-click href="#scroll">Previous</button> {{currentPage+1}}/{{numberOfHeadphonePages()}}
             <button ng-disabled="currentPage >= getHeadPhones().length/pageSize - 1" ng-click="currentPage=currentPage+1" class="btn btn-submit" scroll-on-click href="#scroll">Next</button>
 
         </div>

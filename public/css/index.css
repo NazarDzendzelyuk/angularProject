@@ -56,6 +56,7 @@
     font-weight: 300;
     font-size: 28px;
 }
+
 form[name='signUpForm'] input[type="text"],
 input[type="email"],
 input[type="password"] {
@@ -196,7 +197,8 @@ button.social-signin.google {
     background-image: url(../img/reload.png);
     background-size: contain;
 }
-#user{
+
+#user {
     color: white;
 }
 
@@ -412,21 +414,17 @@ a {
 .container-fluid {
     height: 100vh;
 }
-.container-fluid input[type='text']:focus{
-    border-top: none;
-    border-left: none;
-    border-right: none;
-}
+
 .filter {
     margin-top: 50px;
 }
 
 .headphones:hover {
-    height: 260px !important;
+    height: 240px !important;
 }
 
 .tablets:hover {
-    height: 260px !important;
+    height: 240px !important;
 }
 
 .items {
@@ -448,7 +446,7 @@ a {
     border: 1px solid lightgrey;
     border-radius: 5px;
     cursor: pointer;
-    height: 285px;
+    height: 245px;
     margin-top: -75px;
     z-index: 2;
 }
@@ -509,9 +507,12 @@ button {
 }
 
 .searchInput {
-    border-bottom: 2px solid grey !important;
-    color: black !important;
     font-size: 20px !important;
+}
+
+.searchInput:focus {
+    font-size: 20px !important;
+    border: 1px solid grey;
 }
 
 .message {
@@ -519,8 +520,8 @@ button {
     display: inline-block;
 }
 
-.items .items-chat input {
-    border-bottom: 2px solid grey;
+.items .items-chat input:focus {
+    border: 1px solid grey;
     color: black;
 }
 
@@ -584,11 +585,28 @@ form[name='chatForm'] span {
 
 /*ADMINKA*/
 
-
-
-.container-category{
+.container-category {
     margin-top: 100px;
 }
+
 .container-category .btn {
     margin-top: 35px;
+}
+
+.gallery{
+    text-align: center;
+    border: 1px solid lightgrey;
+}
+.fullInfo{
+    text-align: center
+    margin: 20px;
+}
+.product{
+    margin-top: 50px;
+}
+#comment{
+    width: 250px;
+}
+.back{
+    height: 480px;
 }

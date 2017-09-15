@@ -1,56 +1,113 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Document</title>
-</head>
-
-<body>
-    <div class="container text-center">
-        <div class="row container-category">
-            <div class="col-md-2"></div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label for="newName">Name:</label>
-                    <input type="text" class="form-control" id="newName" ng-model='newName'>
-                    <label for="newPrice">Price:</label>
-                    <input type="text" class="form-control" id="newPrice" ng-model='newPrice'>
-                    <label for="newDisplay">Display:</label>
-                    <input type="text" class="form-control" id="newDisplay" ng-model='newDisplay'>
-                    <label for="newCamera">Camera:</label>
-                    <input type="text" class="form-control" id="newCamera" ng-model='newCamera'>
-                    <label for="newRam">Ram:</label>
-                    <input type="text" class="form-control" id="newRam" ng-model='newRam'>
+<div class="container-fluid text-center" ng-controller='adminCtrl'>
+    <div class="row container-category">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="newName">Name:</label>
+                <input type="text" class="form-control" id="newName" ng-model='newName'>
+                <label for="newPrice">Price:</label>
+                <input type="text" class="form-control" id="newPrice" ng-model='newPrice'>
+                <label for="newDisplay">Display:</label>
+                <input type="text" class="form-control" id="newDisplay" ng-model='newDisplay'>
+                <label for="newCamera">Camera:</label>
+                <input type="text" class="form-control" id="newCamera" ng-model='newCamera'>
+                <label for="newRam">Ram:</label>
+                <input type="text" class="form-control" id="newRam" ng-model='newRam'>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <button class="btn btn-primary" ng-click='addNewPhone()'>Add</button>
+        </div>
+    </div>
+    <div class="row text-center filter">
+        <div class="col-md-3">
+<!--
+            <label>Sort by price
+                    <select ng-model='sortByPrice'>
+                        <option value="-price">price: high to low</option>
+                        <option value="price">price: low to high</option>
+                    </select>
+                </label>
+-->
+        </div>
+        <div class="col-md-5">
+            <div id="search">
+                <div class="input-group stylish-input-group">
+                    <input type="text" class="form-control text-center" placeholder="Search" ng-model='search'>
                 </div>
             </div>
         </div>
+        <div class="col-md-3 showBy">
+            <label>Show
+                         <select ng-model='pageSize' ng-options='item for item in limitRange'>
+                         </select> elements</label>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-md-2">
+            <h5>IMG</h5>
+        </div>
+
+        <div class="col-md-2">
+            <h5> Name</h5>
+        </div>
+        <div class="col-md-1">
+            <h5>Price</h5>
+        </div>
+        <div class="col-md-1">
+            <h5>Display</h5>
+        </div>
+        <div class="col-md-1">
+            <h5>Camera</h5>
+        </div>
+        <div class="col-md-1">
+            <h5>Ram</h5>
+        </div>
+        <div class="col-md-2">
+            <h5>Delete</h5>
+        </div>
+        <div class="col-md-2">
+            <h5>Edit</h5>
+        </div>
+    </div>
+    <div class="good" ng-repeat='phone in phones | filter:search | startFrom:currentPage*pageSize | limitTo:pageSize'>
         <div class="row">
-            <div class="col-md-2"></div>
-            <div class="col-md-6">
-                <button class="btn btn-primary" ng-click='addNewPhone()'>Add</button>
-            </div>
-        </div>
-        <hr>
-              <div class="row">
-            <div class="col-md-2"><h5> Name</h5></div>
-            <div class="col-md-1"><h5>Price</h5></div>
-            <div class="col-md-1"><h5>Display</h5></div>
-            <div class="col-md-1"><h5>Camera</h5></div>
-            <div class="col-md-1"><h5>Ram</h5></div>
-                  <div class="col-md-2"><h5>Delete</h5></div>
-            <div class="col-md-2"><h5>Edit</h5></div>
-        </div>
-        <div class="row" ng-repeat='phone in phones'>
+            <div class="col-md-2">IMG</div>
             <div class="col-md-2">{{phone.name}}</div>
             <div class="col-md-1">{{phone.price}}</div>
             <div class="col-md-1">{{phone.display}}</div>
             <div class="col-md-1">{{phone.camera}}</div>
             <div class="col-md-1">{{phone.ram}}</div>
-            <div class="col-md-2"><button class="btn btn-danger">Delete</button></div>
-            <div class="col-md-2"><button class="btn btn-warning">Edit</button></div>
+            <div class="col-md-2"><button class="btn btn-danger" ng-click='removePhone(phone.id)'>Delete</button></div>
+            <div class="col-md-2"><button class="btn btn-warning" ng-click='editPhone(phone.id, phone.name, phone.price, phone.display, phone.camera, phone.ram)'>Edit</button></div>
         </div>
     </div>
-</body>
-
-</html>
+    <div class="row" ng-show='editBlock'>
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="newName">Name:</label>
+                <input type="text" class="form-control" id="newName" ng-model='editName'>
+                <label for="newPrice">Price:</label>
+                <input type="text" class="form-control" id="newPrice" ng-model='editPrice'>
+                <label for="newDisplay">Display:</label>
+                <input type="text" class="form-control" id="newDisplay" ng-model='editDisplay'>
+                <label for="newCamera">Camera:</label>
+                <input type="text" class="form-control" id="newCamera" ng-model='editCamera'>
+                <label for="newRam">Ram:</label>
+                <input type="text" class="form-control" id="newRam" ng-model='editRam'>
+            </div>
+            <button class="btn btn-primary" ng-click='updatePhone()'>Update</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1" class="btn btn-submit">Previous</button> {{currentPage+1}}/{{numberOfPhonePages()}}
+            <button ng-disabled="currentPage >= getPhones().length/pageSize - 1" ng-click="currentPage=currentPage+1" class="btn btn-submit">Next</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,69 @@
+<!--LOGIN SECTION-->
+<div class="shadow"></div>
+
+<div class="buttons">
+    <div class="clear"></div>
+    <div id="login-box">
+        <div class="left">
+            <h1>Sign in</h1>
+            <form name="signIn">
+                <input type="email" id="logEmail" placeholder="E-mail" name="logEmail" ng-model='logEmail' class="form-control">
+                <input type="password" name="logPass" placeholder="Password" required ng-model='logPass' id="logPass" class="form-control">
+                <span id="err"></span>
+                <a><button type="submit" ng-click='authorize(logEmail)' id="auth">SIGN IN</button></a>
+            </form>
+        </div>
+        <div class="right">
+            <span class="loginwith">Sign in with<br>social network</span>
+            <button class="social-signin google" ng-click="onGoogleLogin()">Log in with Google+</button>
+            <button class="social-signin facebook" ng-click="onFbLogin()">Log in with facebook</button>
+            <div class="fb-like" data-share="true" data-width="200" data-show-faces="true">
+            </div>
+        </div>
+        <div class="or">OR</div>
+    </div>
+    <div id="signup-box">
+        <div class="left">
+            <h1>Sign up</h1>
+            <form name="signUpForm" novalidate>
+                <input type="email" name="email" placeholder="E-mail" required ng-model='email' class="form-control">
+                <span id="exist"></span>
+                <div id="errorEmail" ng-show='signUpForm.email.$invalid && signUpForm.email.$touched || signUpForm.email.$error.email'>
+                    {{getErrorEmail(signUpForm.email.$error)}}
+                </div>
+                <input type="password" name="pass" placeholder="Password" required ng-model='password' ng-pattern='/^[A-Z][a-z0-9_-]{6,18}$/' class="form-control">
+                <div id="errorPass" ng-show='signUpForm.pass.$invalid && signUpForm.pass.$touched || signUpForm.pass.$error.pattern'>
+                    <span ng-show='signUpForm.pass.$error.pattern && signUpForm.pass.$invalid'>Incorrect password</span> {{getErrorEmail(signUpForm.pass.$error)}}
+                </div>
+                <input type="text" id="captcha" readonly ng-model='captcha' name="captcha">
+                <div class="reload" ng-click='reload()' class="form-control"></div><input type="text" name="userAnswer" required ng-model="userAnswer" match='captcha' ng-pattern='captcha' class="form-control">
+                <div class="clear"></div>
+                <div id="errorPass" ng-show='signUpForm.userAnswer.$invalid && signUpForm.userAnswer.$touched || signUpForm.userAnswer.$error.pattern'>
+                    <span ng-show='signUpForm.userAnswer.$error.pattern && signUpForm.userAnswer.$invalid'>Incorrect captcha code</span> {{getErrorEmail(signUpForm.userAnswer.$error)}}
+                </div>
+                <span id="exist"></span>
+                <button type="submit" ng-disabled="signUpForm.$invalid" ng-click='signUp()'> SIGN ME UP</button>
+            </form>
+        </div>
+
+        <div class="right">
+            <span class="loginwith">Sign in with<br>social network</span>
+            <button class="social-signin google" ng-click="onGoogleReg()">Log in with Google+</button>
+            <button class="social-signin facebook" ng-click="onFbReg()">Log in with facebook</button>
+            <div class="fb-like" data-share="true" data-width="200" data-show-faces="true">
+            </div>
+        </div>
+        <div class="or">OR</div>
+    </div>
+</div>
+<!--LOGIN SECTION ENDS-->
+<section class="header--nav--section" ng-hide='login'>
+    <header class="header">
+        <nav class="header--nav">
+            <ul>
+                <li><a href="" id="regButton">Sign up</a></li>
+                <li><a href="#" id="logButton">Sign in</a></li>
+            </ul>
+        </nav>
+    </header>
+</section>
