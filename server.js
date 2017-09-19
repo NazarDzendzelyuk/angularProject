@@ -20,19 +20,6 @@ const connection = mysql.createConnection({
     database: 'myshop'
 });
 
-let categories = function () {
-    connection.query('' +
-        'CREATE TABLE IF NOT EXISTS categories (' +
-        'id int(11) NOT NULL AUTO_INCREMENT,' +
-        'name varchar(50), ' +
-        'PRIMARY KEY(id) )',
-        function (err) {
-            if (err) throw err;
-            console.log('CREATE TABLE IF NOT EXISTS categories')
-        });
-};
-
-categories();
 
 let users = function () {
     connection.query('' +
@@ -49,15 +36,6 @@ let users = function () {
 };
 
 users();
-
-
-app.get('/cat', function (req, res) {
-    connection.query('SELECT * FROM categories', function (err, responce) {
-        if (err) throw err;
-        console.log('get all categories, length: ' + responce.length);
-        res.status(200).send(responce);
-    });
-});
 
 app.get('/signUp', function (req, res) {
     connection.query('SELECT * FROM users', function (err, response) {
@@ -93,6 +71,7 @@ let phones = function () {
         'CREATE TABLE IF NOT EXISTS phones (' +
         'id int(11) NOT NULL AUTO_INCREMENT,' +
         'name varchar(50), ' +
+        'model varchar(50), ' +
         'price int(11), ' +
         'display int(11), ' +
         'camera int(11), ' +
@@ -112,10 +91,10 @@ app.get('/phones', function (req, res) {
         res.status(200).send(response);
     })
 })
-app.get('/phones/:id', function (req, res) {
-    connection.query('SELECT * FROM phones  WHERE id = ?', req.params.id, function (err, rows) {
+app.get('/phones/:name', function (req, res) {
+    connection.query('SELECT * FROM phones  WHERE name = ?', req.params.name, function (err, rows) {
         if (err) throw err;
-        console.log('get phone, id: ' + req.params.id);
+        console.log('get phone, name: ' + req.params.name);
         res.status(200).send(rows);
     });
 });
@@ -137,7 +116,7 @@ app.delete('/phones/:id', function (req, res) {
 })
 
 app.put('/phones/:id', function (req, res) {
-    connection.query('UPDATE phones SET name= ?, price= ?, display= ?, camera= ?, ram= ? WHERE id= ?', [req.body.name, req.body.price, req.body.display, req.body.camera, req.body.ram, req.params.id], function (err) {
+    connection.query('UPDATE phones SET name= ?,model=?, price= ?, display= ?, camera= ?, ram= ? WHERE id= ?', [req.body.name, req.body.model, req.body.price, req.body.display, req.body.camera, req.body.ram, req.params.id], function (err) {
         if (err) throw err;
         console.log('phone updated id: ' + req.params.id)
     })
@@ -149,6 +128,7 @@ let tablets = function () {
         'CREATE TABLE IF NOT EXISTS tablets (' +
         'id int(11) NOT NULL AUTO_INCREMENT,' +
         'name varchar(50), ' +
+        'model varchar(50), ' +
         'price int(11), ' +
         'display int(11), ' +
         'ram int(11), ' +
@@ -168,11 +148,45 @@ app.get('/tablets', function (req, res) {
     })
 })
 
+app.get('/tablets/:name', function (req, res) {
+    connection.query('SELECT * FROM tablets  WHERE name = ?', req.params.name, function (err, rows) {
+        if (err) throw err;
+        console.log('get tablet, name: ' + req.params.name);
+        res.status(200).send(rows);
+    });
+});
+
+app.post('/tablets', function (req, res) {
+    console.log(req.body)
+    connection.query('INSERT INTO tablets SET ?', req.body, function (err, result) {
+        if (err) throw err;
+        console.log('tablet successfully added: ' + result.insertId)
+    })
+    res.sendStatus(200);
+})
+
+app.delete('/tablets/:id', function (req, res) {
+    connection.query('DELETE FROM tablets WHERE id= ?', req.params.id, function (err) {
+        if (err) throw err;
+        console.log('tablet deleted with id: ' + req.body.id)
+    })
+    res.sendStatus(200);
+})
+
+app.put('/tablets/:id', function (req, res) {
+    connection.query('UPDATE tablets SET name= ?,model=?, price= ?, display= ?, ram= ? WHERE id= ?', [req.body.name, req.body.model, req.body.price, req.body.display, req.body.ram, req.params.id], function (err) {
+        if (err) throw err;
+        console.log('tablet updated id: ' + req.params.id)
+    })
+    res.sendStatus(200);
+})
+
 let headphones = function () {
     connection.query('' +
         'CREATE TABLE IF NOT EXISTS headphones (' +
         'id int(11) NOT NULL AUTO_INCREMENT,' +
         'name varchar(50), ' +
+        'model varchar(50), ' +
         'price int(11), ' +
         'connection varchar(50), ' +
         'weight varchar(50), ' +
@@ -192,6 +206,14 @@ app.get('/headphones', function (req, res) {
     })
 })
 
+app.get('/headphones/:name', function (req, res) {
+    connection.query('SELECT * FROM headphones  WHERE name = ?', req.params.name, function (err, rows) {
+        if (err) throw err;
+        console.log('get headphones, name: ' + req.params.name);
+        res.status(200).send(rows);
+    });
+});
+
 let comments = function () {
     connection.query('' +
         'CREATE TABLE IF NOT EXISTS comments (' +
@@ -199,7 +221,7 @@ let comments = function () {
         'email varchar(50), ' +
         'time varchar (50), ' +
         'comment varchar(50), ' +
-        'number int(11), ' +
+        'name varchar(50), ' +
         'PRIMARY KEY(id) )',
         function (err) {
             if (err) throw err;
@@ -215,6 +237,48 @@ app.get('/comments', function (req, res) {
     })
 })
 
+let categories = function () {
+    connection.query('' +
+        'CREATE TABLE IF NOT EXISTS categories (' +
+        'id int(11) NOT NULL AUTO_INCREMENT,' +
+        'name varchar(50), ' +
+        'source varchar (50), ' +
+        'PRIMARY KEY(id) )',
+        function (err) {
+            if (err) throw err;
+            console.log('CREATE TABLE IF NOT EXISTS categories')
+        });
+}
+categories()
+app.get('/categories', function (req, res) {
+    connection.query('SELECT * FROM categories', function (err, response) {
+        if (err) throw err;
+        console.log('get all categories, length' + response.length)
+        res.status(200).send(response);
+    })
+})
+app.post('/categories', function (req, res) {
+    connection.query('INSERT INTO categories SET ?', req.body, function (err, result) {
+        if (err) throw err;
+        console.log('category successfully added: ' + result.insertId)
+    })
+    res.sendStatus(200);
+})
+app.delete('/categories/:id', function (req, res) {
+    connection.query('DELETE FROM categories WHERE id= ?', req.params.id, function (err) {
+        if (err) throw err;
+        console.log('category deleted with id: ' + req.body.id)
+    })
+    res.sendStatus(200);
+})
+
+app.put('/categories/:id', function (req, res) {
+    connection.query('UPDATE categories SET category= ?,source=? WHERE id= ?', [req.body.name, req.body.source, req.params.id], function (err) {
+        if (err) throw err;
+        console.log('category updated id: ' + req.params.id)
+    })
+    res.sendStatus(200);
+})
 app.post('/comments', function (req, res) {
     connection.query('INSERT INTO comments SET ?', req.body, function (err, result) {
         if (err) throw err;
@@ -222,10 +286,12 @@ app.post('/comments', function (req, res) {
     })
     res.sendStatus(200);
 })
-app.get('/comments/:number', function (req, res) {
-    connection.query('SELECT * FROM comments  WHERE number = ?', req.params.number, function (err, rows) {
+
+
+app.get('/comments/:name', function (req, res) {
+    connection.query('SELECT * FROM comments  WHERE name = ?', req.params.name, function (err, rows) {
         if (err) throw err;
-        console.log('get comment, email: ' + req.params.number);
+        console.log('get comment, name: ' + req.params.name);
         res.status(200).send(rows);
     });
 });

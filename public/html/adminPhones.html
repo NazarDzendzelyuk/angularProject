@@ -1,10 +1,12 @@
-<div class="container-fluid text-center" ng-controller='adminCtrl'>
+<div class="container-fluid text-center" ng-show='adminPhonesShow'>
     <div class="row container-category">
         <div class="col-md-3"></div>
         <div class="col-md-6">
             <div class="form-group">
                 <label for="newName">Name:</label>
                 <input type="text" class="form-control" id="newName" ng-model='newName'>
+                <label for="newModel">Model:</label>
+                <input type="text" class="form-control" id="newModel" ng-model='newModel'>
                 <label for="newPrice">Price:</label>
                 <input type="text" class="form-control" id="newPrice" ng-model='newPrice'>
                 <label for="newDisplay">Display:</label>
@@ -24,7 +26,7 @@
     </div>
     <div class="row text-center filter">
         <div class="col-md-3">
-<!--
+            <!--
             <label>Sort by price
                     <select ng-model='sortByPrice'>
                         <option value="-price">price: high to low</option>
@@ -52,8 +54,11 @@
             <h5>IMG</h5>
         </div>
 
-        <div class="col-md-2">
+        <div class="col-md-1">
             <h5> Name</h5>
+        </div>
+        <div class="col-md-1">
+            <h5> Model</h5>
         </div>
         <div class="col-md-1">
             <h5>Price</h5>
@@ -77,13 +82,14 @@
     <div class="good" ng-repeat='phone in phones | filter:search | startFrom:currentPage*pageSize | limitTo:pageSize'>
         <div class="row">
             <div class="col-md-2">IMG</div>
-            <div class="col-md-2">{{phone.name}}</div>
+            <div class="col-md-1">{{phone.name}}</div>
+            <div class="col-md-1">{{phone.model}}</div>
             <div class="col-md-1">{{phone.price}}</div>
             <div class="col-md-1">{{phone.display}}</div>
             <div class="col-md-1">{{phone.camera}}</div>
             <div class="col-md-1">{{phone.ram}}</div>
             <div class="col-md-2"><button class="btn btn-danger" ng-click='removePhone(phone.id)'>Delete</button></div>
-            <div class="col-md-2"><button class="btn btn-warning" ng-click='editPhone(phone.id, phone.name, phone.price, phone.display, phone.camera, phone.ram)'>Edit</button></div>
+            <div class="col-md-2"><button class="btn btn-warning" ng-click='editPhone(phone.id, phone.name,phone.model,phone.price, phone.display, phone.camera, phone.ram)'>Edit</button></div>
         </div>
     </div>
     <div class="row" ng-show='editBlock'>
@@ -92,6 +98,8 @@
             <div class="form-group">
                 <label for="newName">Name:</label>
                 <input type="text" class="form-control" id="newName" ng-model='editName'>
+                <label for="newModel">Model:</label>
+                <input type="text" class="form-control" id="newModel" ng-model='editModel'>
                 <label for="newPrice">Price:</label>
                 <input type="text" class="form-control" id="newPrice" ng-model='editPrice'>
                 <label for="newDisplay">Display:</label>

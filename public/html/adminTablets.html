@@ -1,16 +1,18 @@
-<div class="container-fluid text-center" ng-controller='adminCtrl'>
+<div class="container-fluid text-center" ng-show='adminTabletsShow'>
     <div class="row container-category">
         <div class="col-md-3"></div>
         <div class="col-md-6">
             <div class="form-group">
                 <label for="newName">Name:</label>
-                <input type="text" class="form-control" id="newName" ng-model='newName'>
+                <input type="text" class="form-control" id="newName" ng-model='newTabletName'>
+                <label for="newModel">Model:</label>
+                <input type="text" class="form-control" id="newModel" ng-model='newTabletModel'>
                 <label for="newPrice">Price:</label>
-                <input type="text" class="form-control" id="newPrice" ng-model='newPrice'>
+                <input type="text" class="form-control" id="newPrice" ng-model='newTabletPrice'>
                 <label for="newDisplay">Display:</label>
-                <input type="text" class="form-control" id="newDisplay" ng-model='newDisplay'>
+                <input type="text" class="form-control" id="newDisplay" ng-model='newTabletDisplay'>
                 <label for="newRam">Ram:</label>
-                <input type="text" class="form-control" id="newRam" ng-model='newRam'>
+                <input type="text" class="form-control" id="newRam" ng-model='newTabletRam'>
             </div>
         </div>
     </div>
@@ -22,12 +24,14 @@
     </div>
     <div class="row text-center filter">
         <div class="col-md-3">
+            <!--
             <label>Sort by price
                     <select ng-model='sortByPrice'>
                         <option value="-price">price: high to low</option>
                         <option value="price">price: low to high</option>
                     </select>
                 </label>
+-->
         </div>
         <div class="col-md-5">
             <div id="search">
@@ -45,7 +49,14 @@
     <hr>
     <div class="row">
         <div class="col-md-2">
+            <h5>IMG</h5>
+        </div>
+
+        <div class="col-md-2">
             <h5> Name</h5>
+        </div>
+        <div class="col-md-1">
+            <h5> Model</h5>
         </div>
         <div class="col-md-1">
             <h5>Price</h5>
@@ -65,12 +76,14 @@
     </div>
     <div class="good" ng-repeat='tablet in tablets | filter:search | orderBy:sortByPrice | startFrom:currentPage*pageSize | limitTo:pageSize'>
         <div class="row">
+            <div class="col-md-2">IMG</div>
             <div class="col-md-2">{{tablet.name}}</div>
+            <div class="col-md-1">{{tablet.model}}</div>
             <div class="col-md-1">{{tablet.price}}</div>
             <div class="col-md-1">{{tablet.display}}</div>
             <div class="col-md-1">{{tablet.ram}}</div>
             <div class="col-md-2"><button class="btn btn-danger" ng-click='removeTablet(tablet.id)'>Delete</button></div>
-            <div class="col-md-2"><button class="btn btn-warning" ng-click='editTablet(tablet.id, tablet.name, tablet.price, tablet.display, tablet.ram)'>Edit</button></div>
+            <div class="col-md-2"><button class="btn btn-warning" ng-click='editTablet(tablet.id, tablet.name,tablet.model, tablet.price, tablet.display, tablet.ram)'>Edit</button></div>
         </div>
     </div>
     <div class="row" ng-show='editBlock'>
@@ -79,6 +92,8 @@
             <div class="form-group">
                 <label for="newName">Name:</label>
                 <input type="text" class="form-control" id="newName" ng-model='editTabletName'>
+                <label for="newName">Model:</label>
+                <input type="text" class="form-control" id="newName" ng-model='editTabletModel'>
                 <label for="newPrice">Price:</label>
                 <input type="text" class="form-control" id="newPrice" ng-model='editTabletPrice'>
                 <label for="newDisplay">Display:</label>

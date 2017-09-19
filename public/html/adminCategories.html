@@ -1,19 +1,41 @@
-    <div class="container text-center" ng-controller='adminCtrl'>
-        <div class="row container-category">
-            <div class="col-md-8">
-                <div class="form-group">
-                    <label for="cat">Category:</label>
-                    <input type="text" class="form-control" id="cat" ng-model='addCategory'>
-                </div>
+<div class="container text-center" ng-show='adminCategoriesShow'>
+    <div class="row container-category">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label for="cat">Category:</label>
+                <input type="text" class="form-control" id="cat" ng-model='newCategory'>
             </div>
-            <div class="col-md-4">
-                <button class="btn btn-primary" ng-click='addNewCategory()'>Add</button>
+            <div class="form-group">
+                <label for="source">Source:</label>
+                <input type="text" class="form-control" id="source" ng-model='newSource'>
             </div>
-
         </div>
-        <div class="row" ng-repeat='category in categories'>
-            <div class="col-md-4">{{category.name}}</div>
-            <div class="col-md-4"><button class="btn btn-danger">Delete</button></div>
-            <div class="col-md-4"><button class="btn btn-warning">Edit</button></div>
+
+
+    </div>
+    <div class="row text-center">
+        <div class="col-md-12">
+            <button class="btn btn-primary" ng-click='addNewCategory()'>Add</button>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-3">
+            <h4>Category</h4>
+        </div>
+        <div class="col-md-3">
+            <h4>Source</h4>
+        </div>
+        <div class="col-md-3">
+            <h4>Delete</h4>
+        </div>
+        <div class="col-md-3">
+            <h4>Edit</h4>
+        </div>
+    </div>
+    <div class="row" ng-repeat='category in categories'>
+        <div class="col-md-3">{{category.name}}</div>
+        <div class="col-md-3">{{category.source}}</div>
+        <div class="col-md-3"><button class="btn btn-danger" ng-click='removeCategory(category.id)'>Delete</button></div>
+        <div class="col-md-3"><button class="btn btn-warning">Edit</button></div>
+    </div>
+</div>

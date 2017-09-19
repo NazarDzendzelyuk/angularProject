@@ -1,0 +1,52 @@
+<div class="row product">
+    <input type="button" class="btn btn-primary back" value="Back" ng-click='back()'>
+
+    <div class="col-md-2 text-center">
+        <div ng-repeat='headphone in oneHeadphone' class="fullInfo">
+            <h5>Model:</h5>
+            <p>{{headphone.model}}</p>
+            <h5>Price:</h5>
+            <p>{{headphone.price}} $</p>
+            <h5>Connection:</h5>
+            <p>{{headphone.connection}} </p>
+            <h5>Weight:</h5>
+            <p>{{headphone.weight}} pounds</p>
+            <input type="button" class="btn btn-success" value="Add to cart">
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="col-md-5">
+        <div class="gallery">
+            <a href="/img/headphone.jpg" class="image">
+                <img src="/img/headphone.jpg" alt="" width="70%" height="350"></a><br>
+            <a href="/img/headphone1.jpg" class="image">
+                <img src="/img/headphone1.jpg" alt="" width="160" height="140"></a>
+            <a href="/img/headphone2.png" class="image">
+                <img src="/img/headphone2.png" alt="" width="140" height="140"></a>
+            <a href="/img/headphone3.jpg" class="image">
+                <img src="/img/headphone3.jpg" alt="" width="140" height="140"></a>
+            <a href="/img/headphone4.jpg" class="image">
+                <img src="/img/headphone4.jpg" alt="" width="140" height="140"></a>
+        </div>
+    </div>
+    <div class="col-md-4 text-center">
+        <h3>Comments</h3>
+
+        <ul>
+            <li ng-repeat='comment in comments| orderBy:sortByDate | startFrom:currentPage*pageSize | limitTo:4'>
+                <p>{{comment.time | date:" dd/MM/yy hh:mm:ss"}}</p>
+                <p>{{comment.email}}: {{comment.comment}}
+                    <p>
+                        <hr>
+            </li>
+        </ul>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1" class="btn btn-submit">Previous</button> {{currentPage+1}}/{{numberOfCommentsPages()}}
+                <button ng-disabled="currentPage >= getComments().length/pageSize - 1" ng-click="currentPage=currentPage+1" class="btn btn-submit">Next</button>
+            </div>
+
+        </div>
+        <textarea cols="35" rows="3" placeholder="Enter your comment" ng-model='comment'></textarea><br>
+        <button ng-click='sendComment()' class="btn btn-primary"> Send</button>
+    </div>

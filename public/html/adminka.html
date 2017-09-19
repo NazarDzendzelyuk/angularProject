@@ -1,0 +1,17 @@
+        <header class="header" ng-hide='adminPanel'>
+            <nav class="header--nav">
+                <ul>
+                    <li ng-click='showCategories()'><a href="#">Categories</a></li>
+                    <li ng-click='showPhones()'><a href="#">Phones</a></li>
+                    <li ng-click='showTablets()'><a href="#">Tablets</a></li>
+                    <li><a href="#">Headphones</a></li>
+                    <li ng-click='home()'><a href="">Home</a></li>
+                </ul>
+            </nav>
+        </header>
+        <section>
+            <admin-categories></admin-categories>
+            <admin-phones></admin-phones>
+            <admin-tablets></admin-tablets>
+        </section>
+

@@ -1,16 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Document</title>
-</head>
-
-<body>
-    <div class="row goods">
-        <div class="col-md-4 item headphones" ng-repeat='headphone in headphones | filter:search | orderBy:sortByPrice | startFrom:currentPage*pageSize | limitTo:pageSize '>
+    <div ng-show='allHeadphones'>
+       <div class="row goods">
+        <div class="col-md-4 item headphones" ng-repeat='headphone in headphones | filter:search | orderBy:sortByPrice | startFrom:currentPage*pageSize | limitTo:pageSize ' ng-click='headphoneInfo(headphone.name)'>
             <a href=""><img src='../img/headphone.png'></a>
-            <h6>{{headphone.name}}</h6>
+            <h6>{{headphone.model}}</h6>
             <h6>Price: {{headphone.price}} $</h6>
             <div class="goods--moreInfo">
                 <h6>Weight: {{headphone.weight}} pounds</h6>
@@ -26,6 +18,4 @@
 
         </div>
     </div>
-</body>
-
-</html>
+</div>
