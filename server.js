@@ -51,20 +51,34 @@ app.post('/signUp', function (req, res) {
     })
     res.sendStatus(200);
 })
-app.get('/signUp/:email', function (req, res) {
-    connection.query('SELECT * FROM users  WHERE email = ?', req.params.email, function (err, rows) {
+app.post('/login', function (req, res) {
+    connection.query('SELECT * FROM users  WHERE email = ?', req.body.email, function (err, rows) {
         if (err) throw err;
-        console.log('get user, email: ' + req.params.email);
-        res.status(200).send(rows);
+        if (rows[0] != undefined) {
+            if (rows[0].password == req.body.password) {
+                res.status(200).send("welcome");
+                connection.query('UPDATE users SET status = "1" WHERE id = ?', rows[0].id,
+                    function (err) {
+                        if (err) throw err;
+                    }
+                );
+            } else {
+                res.status(200).send("wrong password");
+            }
+        } else {
+            res.status(200).send("wrong login");
+        }
+
     });
 });
-app.put('/signUp/:email', function (req, res) {
-    connection.query('UPDATE users SET status= ? WHERE email= ?', [req.body.status, req.params.email], function (err) {
-        if (err) throw err;
-        console.log('user updated email: ' + req.params.email)
-    })
+app.post('/logout', function (req, res) {
+    connection.query('UPDATE users SET status = "0" WHERE email = ?', req.body.email,
+        function (err) {
+            if (err) throw err;
+        }
+    );
     res.sendStatus(200);
-})
+});
 
 let phones = function () {
     connection.query('' +
@@ -205,7 +219,14 @@ app.get('/headphones', function (req, res) {
         res.status(200).send(response);
     })
 })
-
+app.post('/headphones', function (req, res) {
+    console.log(req.body)
+    connection.query('INSERT INTO headphones SET ?', req.body, function (err, result) {
+        if (err) throw err;
+        console.log('headphone successfully added: ' + result.insertId)
+    })
+    res.sendStatus(200);
+})
 app.get('/headphones/:name', function (req, res) {
     connection.query('SELECT * FROM headphones  WHERE name = ?', req.params.name, function (err, rows) {
         if (err) throw err;
@@ -213,6 +234,22 @@ app.get('/headphones/:name', function (req, res) {
         res.status(200).send(rows);
     });
 });
+
+app.delete('/headphones/:id', function (req, res) {
+    connection.query('DELETE FROM headphones WHERE id= ?', req.params.id, function (err) {
+        if (err) throw err;
+        console.log('headphone deleted with id: ' + req.body.id)
+    })
+    res.sendStatus(200);
+})
+
+app.put('/headphones/:id', function (req, res) {
+    connection.query('UPDATE headphones SET name= ?,model=?, price= ?, connection= ?, weight= ? WHERE id= ?', [req.body.name, req.body.model, req.body.price, req.body.connection, req.body.weight, req.params.id], function (err) {
+        if (err) throw err;
+        console.log('headphone updated id: ' + req.params.id)
+    })
+    res.sendStatus(200);
+})
 
 let comments = function () {
     connection.query('' +
@@ -273,7 +310,7 @@ app.delete('/categories/:id', function (req, res) {
 })
 
 app.put('/categories/:id', function (req, res) {
-    connection.query('UPDATE categories SET category= ?,source=? WHERE id= ?', [req.body.name, req.body.source, req.params.id], function (err) {
+    connection.query('UPDATE categories SET name= ?,source=? WHERE id= ?', [req.body.name, req.body.source, req.params.id], function (err) {
         if (err) throw err;
         console.log('category updated id: ' + req.params.id)
     })

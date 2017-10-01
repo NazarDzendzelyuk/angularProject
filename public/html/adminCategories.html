@@ -36,6 +36,18 @@
         <div class="col-md-3">{{category.name}}</div>
         <div class="col-md-3">{{category.source}}</div>
         <div class="col-md-3"><button class="btn btn-danger" ng-click='removeCategory(category.id)'>Delete</button></div>
-        <div class="col-md-3"><button class="btn btn-warning">Edit</button></div>
+        <div class="col-md-3"><button class="btn btn-warning" ng-click='editCategory(category.id, category.name, category.source)'>Edit</button></div>
+    </div>
+    <div class="row" ng-show='editBlock'>
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="newName">Name:</label>
+                <input type="text" class="form-control" id="newName" ng-model='editCategoryName'>
+                <label for="newSource">Source:</label>
+                <input type="text" class="form-control" id="newSource" ng-model='editSource'>
+            </div>
+            <button class="btn btn-primary" ng-click='updateCategory()'>Update</button>
+        </div>
     </div>
 </div>

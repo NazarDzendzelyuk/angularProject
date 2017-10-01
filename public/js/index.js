@@ -36,7 +36,6 @@ var app = angular.module('myApp', ['ngRoute']);
 
 app.controller('myCtrl', function ($scope, $filter, $http, $window) {
 
-
     $http.get('http://localhost:8000/categories')
         .then(function successCallback(response) {
             $scope.categories = response.data;
@@ -66,7 +65,9 @@ app.controller('myCtrl', function ($scope, $filter, $http, $window) {
 
     //PAGINATION
     $scope.limitRange = [4, 6, 8]
-    $scope.currentPage = 0;
+    $scope.currentPhonePage = 0;
+    $scope.currentHeadphonePage = 0;
+    $scope.currentTabletPage = 0;
     $scope.search = '';
     $scope.pageSize = 4;
 
@@ -221,8 +222,6 @@ app.directive('login', function () {
                                     $http.post('http://localhost:8000/signUp', obj)
                                         .then(function successCallback(response) {
                                             console.log("Success!");
-                                            $scope.logEmail = $scope.email;
-                                            $scope.logPass = $scope.password;
                                             $('#signup-box').fadeOut(500);
                                             $('.shadow').slideDown(500);
                                             $('#login-box').slideDown(500);
@@ -240,74 +239,63 @@ app.directive('login', function () {
                     });
 
             }
-
-            $http.get('http://localhost:8000/signUp')
-                .then(function successCallback(response) {
-                    $scope.users = response.data;
-                    for (var i = 0; i < $scope.users.length; i++) {
-                        if ($scope.users[i].status == 0) {
-                            $scope.authorized = true;
-                        } else if ($scope.users[i].status == 1) {
-                            $scope.authorized = true;
-                            $scope.authorized = false;
-                            $scope.login = true;
-
-                        }
-                    }
-
-                })
             $scope.authorized = true;
-            $scope.authorize = function (putEmail) {
-                $('#user').text('gfds')
-                var obj = {
-                    status: 1
+            //Загрузка авторизованого юзера (якщо є)
+            if (localStorage.userName == undefined) {
+                localStorage.userName = "default";
+
+            } else {
+                if (localStorage.userName != "default") {
+                    $scope.userLogIn = localStorage.userName;
+                    $scope.login = true;
+                    $scope.authorized = false;
+
+
+                } else {
+                    $scope.login = false;
+                    $scope.authorized = true;
                 }
-                $http.put('http://localhost:8000/signUp/' + putEmail, obj).then(function successCallback(response) {
-                    console.log('success');
+            };
+            $scope.authorize = function () {
+                let loginObj = {
+                    email: $scope.logEmail,
+                    password: $scope.logPass
+                }
+
+                $http.post('http://localhost:8000/login', loginObj).then(function successCallback(response) {
+                    if (response.data == "welcome") {
+                        $scope.userLogIn = $scope.logEmail;
+                        $('.shadow').slideUp(500);
+                        $('#login-box').slideUp(500);
+                        $scope.authorized = false;
+                        $scope.login = true;
+                        $scope.user = "";
+                        localStorage.userName = $scope.userLogIn;
+                        $scope.logEmail = '';
+                        $scope.logPass = '';
+                    } else {
+                        $scope.user = response.data;
+                    };
                 }, function errorCallback(response) {
-                    console.log('Error ' + response.err)
-                })
-                $http.get('http://localhost:8000/signUp')
+                    console.log("Error!!!" + response.err);
+                });
+
+            }
+            //Розлогінитись
+            $scope.logout = function () {
+                let logoutObj = {
+                    email: localStorage.userName
+                };
+                $http.post('http://localhost:8000/logout', logoutObj)
                     .then(function successCallback(response) {
-                        $scope.users = response.data;
+                        console.log("Good by!")
                     }, function errorCallback(response) {
                         console.log("Error!!!" + response.err);
                     });
-                $http.get('http://localhost:8000/signUp').then(function successCallback(response) {
-                    $scope.users = response.data;
-                    for (var i = 0; i < $scope.users.length; i++) {
-                        if ($scope.logEmail == $scope.users[i].email && $scope.logPass == $scope.users[i].password) {
-                            $scope.login = true;
-                            $scope.authorized = false;
-                            $scope.users.status = 1;
-                            $('.shadow').slideUp(500);
-                            $('#login-box').fadeOut(500);
-                            break;
-                        } else {
-                            if (i == $scope.users.length - 1) {
-                                $('#err').text('Incorrect login or pass')
-                                break;
-                            }
-                        }
-                    }
-                })
-            }
-            $scope.logout = function (saveEmail) {
-                var obj = {
-                    status: 0
-                }
-                $http.put('http://localhost:8000/signUp/' + saveEmail, obj).then(function successCallback(response) {
-                    console.log('success');
-                }, function errorCallback(response) {
-                    console.log('Error ' + response.err)
-                })
-                $http.get('http://localhost:8000/signUp')
-                    .then(function successCallback(response) {
-                        $scope.users = response.data;
-                    }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
-                    });
-            }
+                $scope.login = false;
+                $scope.authorized = true;
+                localStorage.userName = "default";
+            };
 
             //    LOGIN THROUGH SOCIAL NETWORK
 
@@ -385,7 +373,7 @@ app.directive('slider', function () {
         link: function (scope, element, attrs) {
             $('.fa-angle-double-down').on('click', function () {
                 $('body').animate({
-                    scrollTop: $('.container-fluid').offset().top
+                    scrollTop: $('.container-fluid').offset().top + 770 + 'vh'
                 }, 1000)
             })
             //SLIDER
@@ -536,10 +524,6 @@ app.directive('allGoods', function () {
 app.directive('mainPart', function () {
     return {
         templateUrl: '/html/mainPart.html',
-        controller: function ($scope, $http, $filter) {
-
-        }
-
     }
 })
 app.directive('onePhone', function () {
@@ -827,7 +811,7 @@ app.directive('adminka', function () {
                 $scope.authorized = true;
                 $scope.sliderHide = true;
                 $scope.adminCategoriesShow = true;
-                $scope.adminTabletsShow = true;
+                $scope.adminTabletsShow = false;
 
             }
             $scope.home = function () {
@@ -840,24 +824,42 @@ app.directive('adminka', function () {
                 $scope.adminCategoriesShow = false;
                 $scope.adminPhonesShow = false;
                 $scope.adminTabletsShow = false;
-
-
-
+                $scope.adminHeadphonesShow = false;
             }
             $scope.showPhones = function () {
                 $scope.adminCategoriesShow = false;
                 $scope.adminPhonesShow = true;
                 $scope.adminTabletsShow = false;
+                $scope.adminHeadphonesShow = false;
+                $scope.editBlock = false;
+
+
             }
             $scope.showCategories = function () {
                 $scope.adminCategoriesShow = true;
                 $scope.adminPhonesShow = false;
                 $scope.adminTabletsShow = false;
+                $scope.adminHeadphonesShow = false;
+                $scope.editBlock = false;
+
+
             }
             $scope.showTablets = function () {
                 $scope.adminCategoriesShow = false;
                 $scope.adminPhonesShow = false;
                 $scope.adminTabletsShow = true;
+                $scope.adminHeadphonesShow = false;
+                $scope.editBlock = false;
+
+
+            }
+            $scope.showHeadphones = function () {
+                $scope.adminCategoriesShow = false;
+                $scope.adminPhonesShow = false;
+                $scope.adminTabletsShow = false;
+                $scope.adminHeadphonesShow = true;
+                $scope.editBlock = false;
+
             }
         }
     }
@@ -906,27 +908,29 @@ app.directive('adminCategories', function () {
             }
 
             //    EDIT CATEGORY
-            $scope.editCategory = '';
+            $scope.editCategoryName = '';
             $scope.editSource = '';
             $scope.editIndex = "";
+            $scope.editBlock = false;
 
 
-            $scope.editCategory = function (index, category, source) {
+
+            $scope.editCategory = function (index, name, source) {
                 $scope.editIndex = index;
                 $scope.editBlock = true;
-                $scope.editCategory = category;
+                $scope.editCategoryName = name;
                 $scope.editSource = source;
             };
 
             $scope.updateCategory = function () {
                 var obj = {
-                    name: $scope.editCategory,
+                    name: $scope.editCategoryName,
                     source: $scope.editSource
                 };
                 $http.put('http://localhost:8000/categories/' + $scope.editIndex, obj).then(function successCallback(response) {
                     console.log('success');
                     $scope.editIndex = "";
-                    $scope.editCategory = '';
+                    $scope.editCategoryName = '';
                     $scope.editSource = '';
                     $scope.editBlock = false;
                 }, function errorCallback(response) {
@@ -1141,6 +1145,106 @@ app.directive('adminTablets', function () {
                 $http.get('http://localhost:8000/tablets')
                     .then(function successCallback(response) {
                         $scope.tablets = response.data;
+                    }, function errorCallback(response) {
+                        console.log("Error!!!" + response.err);
+                    });
+
+            }
+        }
+    }
+})
+app.directive('adminHeadphones', function () {
+    return {
+        templateUrl: '/html/adminHeadphones.html',
+        controller: function ($scope, $http) {
+            //    ADD NEW HEADPHONE
+            $scope.addNewHeadphone = function () {
+                var headphone = {
+                    name: $scope.newHeadphoneName,
+                    model: $scope.newHeadphoneModel,
+                    price: $scope.newHeadphonePrice,
+                    connection: $scope.newHeadphoneConnection,
+                    weight: $scope.newHeadphoneWeight
+                }
+
+                $http.post('http://localhost:8000/headphones', headphone)
+                    .then(function successCallback(response) {
+                        console.log("Success!");
+                    }, function errorCallback(response) {
+                        console.log("Error!!!" + response.err);
+                    });
+                $http.get('http://localhost:8000/headphones')
+                    .then(function successCallback(response) {
+                        $scope.headphones = response.data;
+                    }, function errorCallback(response) {
+                        console.log("Error!!!" + response.err);
+                    });
+                $scope.newHeadphoneName = '';
+                $scope.newHeadphoneModel = '';
+                $scope.newHeadphonePrice = '';
+                $scope.newHeadphoneConnection = '';
+                $scope.newHeadphoneWeight = '';
+            }
+            //    DELETE
+            $scope.removeHeadphone = function (id) {
+
+                $http.delete('http://localhost:8000/headphones/' + id).then(function successCallback(response) {
+                    console.log('success')
+                }, function errorCallback(response) {
+                    console.log('Error' + response.err)
+                })
+
+                $http.get('http://localhost:8000/headphones')
+                    .then(function successCallback(response) {
+                        $scope.headphones = response.data;
+                    }, function errorCallback(response) {
+                        console.log("Error!!!" + response.err);
+                    });
+            }
+
+            //    EDIT HEADPHONE
+            $scope.newHeadphoneName = '';
+            $scope.newHeadphoneModel = '';
+            $scope.newHeadphonePrice = '';
+            $scope.newHeadphoneConnection = '';
+            $scope.newHeadphoneWeight = '';
+            $scope.editBlock = false;
+            $scope.editIndex = "";
+
+
+            $scope.editHeadphone = function (index, name, model, price, connection, weight) {
+                $scope.editIndex = index;
+                $scope.editBlock = true;
+                $scope.editHeadphoneName = name;
+                $scope.editHeadphoneModel = model;
+                $scope.editHeadphonePrice = price;
+                $scope.editHeadphoneConnection = connection;
+                $scope.editHeadphoneWeight = weight;
+            };
+
+            $scope.updateHeadphone = function () {
+                var obj = {
+                    name: $scope.editHeadphoneName,
+                    model: $scope.editHeadphoneModel,
+                    price: $scope.editHeadphonePrice,
+                    connection: $scope.editHeadphoneConnection,
+                    weight: $scope.editHeadphoneWeight
+                };
+                $http.put('http://localhost:8000/headphones/' + $scope.editIndex, obj).then(function successCallback(response) {
+                    console.log('success');
+                    $scope.editIndex = "";
+                    $scope.editHeadphoneName;
+                    $scope.editHeadphoneModel;
+                    $scope.editHeadphonePrice;
+                    $scope.editHeadphoneConnection;
+                    $scope.editHeadphoneWeight;
+                    $scope.editBlock = false;
+                }, function errorCallback(response) {
+                    console.log('Error ' + response.err)
+                })
+                $http.get('http://localhost:8000/headphones')
+                    .then(function successCallback(response) {
+                        $scope.headphones = response.data;
                     }, function errorCallback(response) {
                         console.log("Error!!!" + response.err);
                     });

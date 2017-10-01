@@ -9,8 +9,8 @@
             <form name="signIn">
                 <input type="email" id="logEmail" placeholder="E-mail" name="logEmail" ng-model='logEmail' class="form-control">
                 <input type="password" name="logPass" placeholder="Password" required ng-model='logPass' id="logPass" class="form-control">
-                <span id="err"></span>
-                <a><button type="submit" ng-click='authorize(logEmail)' id="auth">SIGN IN</button></a>
+                <span id="err">{{user}}</span>
+                <a><button type="submit" ng-click='authorize()' id="auth">SIGN IN</button></a>
             </form>
         </div>
         <div class="right">

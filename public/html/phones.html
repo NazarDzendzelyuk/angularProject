@@ -16,8 +16,8 @@
     <!--    PAGINATION-->
     <div class="row">
         <div class="col-md-12 text-center">
-            <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1" id="previousPage" class="btn btn-submit" scroll-on-click href="#scroll">Previous</button> {{currentPage+1}}/{{numberOfPhonePages()}}
-            <button ng-disabled="currentPage >= getPhones().length/pageSize - 1" ng-click="currentPage=currentPage+1" id="nextPage" class="btn btn-submit" scroll-on-click href="#scroll">Next</button>
+            <button ng-disabled="currentPhonePage == 0" ng-click="currentPhonePage=currentPhonePage-1" id="previousPage" class="btn btn-submit" scroll-on-click href="#scroll">Previous</button> {{currentPhonePage+1}}/{{numberOfPhonePages()}}
+            <button ng-disabled="currentPhonePage >= getPhones().length/pageSize - 1" ng-click="currentPhonePage=currentPhonePage+1" id="nextPage" class="btn btn-submit" scroll-on-click href="#scroll">Next</button>
         </div>
     </div>
 </div>
