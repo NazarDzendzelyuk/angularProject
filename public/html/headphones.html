@@ -1,6 +1,6 @@
     <div ng-show='allHeadphones'>
        <div class="row goods">
-        <div class="col-md-4 item headphones" ng-repeat='headphone in headphones | filter:search | orderBy:sortByPrice | startFrom:currentPage*pageSize | limitTo:pageSize ' ng-click='headphoneInfo(headphone.name)'>
+        <div class="col-md-4 item headphones" ng-repeat='headphone in headphones | filter:search | orderBy:sortByPrice | startFrom:currentHeadphonePage*pageSize | limitTo:pageSize ' ng-click='headphoneInfo(headphone.name)'>
             <a href=""><img src='../img/headphone.png'></a>
             <h6>{{headphone.model}}</h6>
             <h6>Price: {{headphone.price}} $</h6>

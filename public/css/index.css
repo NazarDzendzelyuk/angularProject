@@ -1,11 +1,11 @@
 /*LOGN START*/
 
 .shadow {
-    position: absolute;
+    position: fixed;
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.8);
-    z-index: 1;
+    z-index: 3;
     display: none;
 }
 
@@ -15,24 +15,23 @@
 
 #signup-box,
 #login-box {
-    position: absolute;
+    position: fixed;
     width: 600px;
     height: 400px;
     left: 50%;
     top: 50%;
     margin-left: -300px;
-    margin-top: -300px;
+    margin-top: -200px;
     background: #FFF;
     border-radius: 2px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-    z-index: 2;
+    z-index: 3;
     display: none;
 }
 
 #errorSignup,
 #errorLogin {
     position: absolute;
-    color: red;
 }
 
 .left {
@@ -387,7 +386,6 @@ a {
     height: 40px;
     width: 100%;
 }
-
 .header--nav ul {
     display: flex;
     margin-left: 50px;
@@ -409,12 +407,8 @@ a {
 
 .sliderSection--slider {
     height: 97vh;
+    position: relative;
 }
-
-.container-fluid {
-    height: 100vh;
-}
-
 .filter {
     margin-top: 50px;
 }
@@ -476,7 +470,7 @@ a {
 }
 
 .chatBox {
-    height: 400px;
+    height: 370px;
     border: 1px solid lightgrey;
     overflow: auto;
     margin-top: 15px;
@@ -509,6 +503,7 @@ button {
 
 .searchInput {
     font-size: 20px !important;
+    position: static;
 }
 
 .searchInput:focus {
@@ -546,7 +541,7 @@ button {
     opacity: 0.65;
     font-size: 70px;
     cursor: pointer;
-    position: relative;
+    position: absolute;
     top: 85%;
     left: 50%;
     margin-left: -17px;
@@ -578,11 +573,6 @@ select:hover {
 form[name='chatForm'] span {
     margin-left: 5px;
 }
-
-.footer {
-    height: 350px;
-}
-
 
 /*ADMINKA*/
 

@@ -1,16 +1,67 @@
 const express = require("express");
 const bodyParser = require('body-parser');
 const app = express();
+const server = require('http').createServer(app);
 const cors = require('cors');
 const mysql = require('mysql');
 const port = 8000;
+const multer = require('multer');
+const fs = require('fs');
+const io = require('socket.io').listen(server);
+var arr = [];
+var connections = [];
 
+
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/uploads/')
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname);
+    }
+});
+
+var upload = multer({
+    storage: storage
+});
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     'extended': 'true'
 }));
 app.use(cors());
+
+io.sockets.on('connection', function (socket) {
+    connections.push(socket);
+    console.log('Connected: %s socket connected', connections.length);
+
+    //    DISCONNECT
+    socket.on('disconnect', function (data) {
+        connections.splice(connections.indexOf(socket), 1);
+        console.log('Disconnected: %s socket connected', connections.length)
+    })
+
+    socket.on('send message', function (data, userName) {
+        console.log(data);
+        if(userName==null || userName==''){
+            socket.name='Anonim'
+        }else{
+            socket.name=userName;
+        }
+            io.sockets.emit('new message', {
+                msg: data,
+                user: socket.name
+            })
+    })
+    socket.on('new user', function (data) {
+        console.log(data);
+        socket.name = data;
+        arr.push(socket.name);
+    })
+
+})
+
+
 
 //MYSQL
 const connection = mysql.createConnection({
@@ -146,6 +197,7 @@ let tablets = function () {
         'price int(11), ' +
         'display int(11), ' +
         'ram int(11), ' +
+        'src varchar(150),' +
         'PRIMARY KEY(id) )',
         function (err) {
             if (err) throw err;
@@ -154,6 +206,7 @@ let tablets = function () {
 };
 
 tablets();
+
 app.get('/tablets', function (req, res) {
     connection.query('SELECT * FROM tablets', function (err, response) {
         if (err) throw err;
@@ -186,11 +239,24 @@ app.delete('/tablets/:id', function (req, res) {
     })
     res.sendStatus(200);
 })
+app.delete('/tabletImg/:src', function (req, res) {
+    fs.unlink('public/uploads/' + req.params.src + '', (err) => {
+        if (err) throw err;
+        console.log('successfully deleted');
+    });
+})
 
 app.put('/tablets/:id', function (req, res) {
     connection.query('UPDATE tablets SET name= ?,model=?, price= ?, display= ?, ram= ? WHERE id= ?', [req.body.name, req.body.model, req.body.price, req.body.display, req.body.ram, req.params.id], function (err) {
         if (err) throw err;
         console.log('tablet updated id: ' + req.params.id)
+    })
+    res.sendStatus(200);
+})
+app.put('/tabletImgEdit/:src', function (req, res) {
+    connection.query('UPDATE tablets SET src= ? WHERE src= ?', [req.body.src, req.params.src], function (err) {
+        if (err) throw err;
+        console.log('tablet updated id: ' + req.params.src)
     })
     res.sendStatus(200);
 })
@@ -333,10 +399,14 @@ app.get('/comments/:name', function (req, res) {
     });
 });
 
+app.post('/images', upload.any(), function (req, res, next) {
+    res.sendStatus(200);
+})
+
 app.get('*', function (req, res) {
     res.sendFile(__dirname + '/public/index.html')
 })
-app.listen(port, function (err) {
+server.listen(port, function (err) {
     if (err) throw err;
     console.log('Server start on port 8000!');
 });

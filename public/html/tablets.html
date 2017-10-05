@@ -1,8 +1,8 @@
     <div ng-show='allTablets'>
        <div class="row goods ">
-        <div class="col-md-4 item tablets" ng-repeat='tablet in tablets | filter:search | orderBy:sortByPrice | startFrom:currentPage*pageSize | limitTo:pageSize ' ng-click='tabletInfo(tablet.name)'>
-            <a href=""><img src='../img/tablet.png' style="width: 90px"></a>
-            <h6>{{tablet.model}}</h6>
+        <div class="col-md-4 item tablets" ng-repeat='tablet in tablets | filter:search | orderBy:sortByPrice | startFrom:currentTabletPage*pageSize | limitTo:pageSize ' ng-click='tabletInfo(tablet.name)'>
+            <a href=""><img src='../uploads/{{tablet.src}}' width="50%" height="60%"></a>
+            <h6>Model: {{tablet.model}}</h6>
             <h6>Price: {{tablet.price}} $</h6>
 
             <div class="goods--moreInfo">

@@ -10,7 +10,7 @@
                     </select>
                 </label>
             </div>
-            <div class="col-md-5" id="scroll">
+            <div class="col-md-5">
                 <div id="search">
                     <div class="input-group stylish-input-group">
                         <input type="text" class="form-control text-center searchInput" placeholder="Search" ng-model='search'>
@@ -29,13 +29,17 @@
                 <form name="chatForm" novalidate>
                     <div class="message">
                         <div class="input-group stylish-input-group">
-                            <input type="text" class="form-control name" placeholder="Type your name" ng-model='name' name="name" required>
+                            <input type="text" class="form-control name" placeholder="Type your name" ng-model='name' name="name" ng-hide='userNameInput'>
+                        </div>
+                        <div ng-show='afterName'>
+                            Yor name is: {{name}}
+                            <i class="fa fa-pencil" aria-hidden="true" ng-click='editChatName()'></i>
 
                         </div>
-                    </div><button class="btn btn-submit" ng-click='changeName()' ng-disabled='chatForm.name.$error.required'>Ok</button>
+                    </div><button class="btn btn-submit" ng-click='changeName()' ng-disabled='chatForm.name.$error.required' ng-hide='userNameInput'>Ok</button>
                     <span ng-show="chatForm.name.$touched && chatForm.name.$error.required" style="color: red">Can't be empty</span>
                     <div class="chatBox">
-                        <p ng-repeat='message in messages'>{{message.date}} <b>{{message.username}}:</b> {{message.message}}</p>
+                        <!--                        <p ng-repeat='message in messages'>{{message.date}} <b>{{message.username}}:</b> {{message.message}}</p>-->
                     </div>
                     <div class="message">
                         <div class="input-group stylish-input-group">
@@ -49,19 +53,14 @@
                 <all-tablets></all-tablets>
                 <all-headphones></all-headphones>
             </div>
-
             <div class="col-md-2 categories">
                 <h3>Categories</h3>
                 <ul>
                     <li ng-repeat='category in categories'> <a href="#" ng-click='show(category.source)'> {{category.name}}</a></li>
-        
 
                 </ul>
             </div>
         </div>
     </main>
-</section>
-<hr>
-<section>
-    <footer class="footer"></footer>
+
 </section>

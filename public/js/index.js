@@ -1,22 +1,23 @@
 //LOGIN
 
 //BUTTON TO TOP
-$('.fa-arrow-up').on('click', function () {
-    $('body').animate({
-        scrollTop: $('.container-fluid').offset().top + 2 + 'px'
-    }, 1000);
-
-});
-$(window).scroll(function () {
-    if ($('body').scrollTop() > $('#search').offset().top) {
-        $('.fa-arrow-up').css('display', 'block')
-    } else {
-        $('.fa-arrow-up').css('display', 'none')
-
-    }
-});
+//$('.fa-arrow-up').on('click', function () {
+//    $('body').animate({
+//        scrollTop: $('.container-fluid').offset().top + 2 + 'px'
+//    }, 1000);
+//
+//});
+//$(window).scroll(function () {
+//    if ($('body').scrollTop() > $('#search').offset().top) {
+//        $('.fa-arrow-up').css('display', 'block')
+//    } else {
+//        $('.fa-arrow-up').css('display', 'none')
+//
+//    }
+//});
 //NEXT/PREVIOUS PAGE
 //GOODS
+
 var a, b, c, d, e, code;
 
 function captcha() {
@@ -35,7 +36,11 @@ var cbpBGSlideshow;
 var app = angular.module('myApp', ['ngRoute']);
 
 app.controller('myCtrl', function ($scope, $filter, $http, $window) {
-
+    $('.fa-angle-double-down').on('click', function () {
+        $(window).animate({
+            scrollTop: $('.sliderSection').offset().top + 100 + 'vh'
+        })
+    })
     $http.get('http://localhost:8000/categories')
         .then(function successCallback(response) {
             $scope.categories = response.data;
@@ -65,6 +70,7 @@ app.controller('myCtrl', function ($scope, $filter, $http, $window) {
 
     //PAGINATION
     $scope.limitRange = [4, 6, 8]
+    $scope.currentPage = 0;
     $scope.currentPhonePage = 0;
     $scope.currentHeadphonePage = 0;
     $scope.currentTabletPage = 0;
@@ -125,38 +131,9 @@ app.controller('myCtrl', function ($scope, $filter, $http, $window) {
         return Math.ceil($scope.getHeadPhones().length / $scope.pageSize);
     }
 
-    $scope.messages = [{
-        username: 'Anonim',
-        date: date,
-        message: ''
-    }]
-    $scope.changeName = function () {
-        $scope.messages.splice(0, 1, {
-            username: $scope.name
-        })
-        $('.name').val('');
-    };
-
-    $scope.sendMessage = function () {
-        if ($scope.name == '') {
-            $scope.name = 'Anonim'
-        }
-        $scope.messages.push({
-            username: $scope.name,
-            date: date,
-            message: $scope.message
-        })
-        $scope.message = ''
-    };
-
     $scope.sortByPrice = '-price';
     $scope.sortByDate = '-time';
-
-
-
-
 })
-
 
 app.directive('login', function () {
     return {
@@ -239,7 +216,16 @@ app.directive('login', function () {
                     });
 
             }
+            $scope.showIfAdmin = true;
+
             $scope.authorized = true;
+            if (localStorage.userName == 'n.dzendzelyuk@gmail.com') {
+                $scope.showIfAdmin = false;
+
+            } else {
+                $scope.showIfAdmin = true;
+
+            }
             //Загрузка авторизованого юзера (якщо є)
             if (localStorage.userName == undefined) {
                 localStorage.userName = "default";
@@ -249,21 +235,36 @@ app.directive('login', function () {
                     $scope.userLogIn = localStorage.userName;
                     $scope.login = true;
                     $scope.authorized = false;
-
-
                 } else {
                     $scope.login = false;
                     $scope.authorized = true;
+
                 }
             };
+            $scope.addToCart = function () {
+                if (localStorage.userName == 'default') {
+                    $('.shadow').slideDown(500);
+                    $('#login-box').slideDown(500);
+                    $(window).scrollTop(0);
+                } else {
+                    alert('s')
+                }
+
+            }
             $scope.authorize = function () {
                 let loginObj = {
                     email: $scope.logEmail,
                     password: $scope.logPass
                 }
-
                 $http.post('http://localhost:8000/login', loginObj).then(function successCallback(response) {
                     if (response.data == "welcome") {
+                        if ($scope.logEmail == 'n.dzendzelyuk@gmail.com') {
+                            $scope.showIfAdmin = false;
+
+                        } else {
+                            $scope.showIfAdmin = true;
+
+                        }
                         $scope.userLogIn = $scope.logEmail;
                         $('.shadow').slideUp(500);
                         $('#login-box').slideUp(500);
@@ -366,16 +367,11 @@ app.directive('login', function () {
 
     }
 })
-
 app.directive('slider', function () {
     return {
         templateUrl: '/html/slider.html',
         link: function (scope, element, attrs) {
-            $('.fa-angle-double-down').on('click', function () {
-                $('body').animate({
-                    scrollTop: $('.container-fluid').offset().top + 770 + 'vh'
-                }, 1000)
-            })
+
             //SLIDER
             cbpBGSlideshow = (function () {
 
@@ -504,20 +500,41 @@ app.directive('allGoods', function () {
     return {
         templateUrl: '/html/allGoods.html',
         controller: function ($scope, $http) {
+            var socket = io.connect();
             $scope.back = function () {
                 $scope.mainPart = false;
                 $scope.phoneDetails = false;
                 $scope.tabletDetails = false;
                 $scope.headphoneDetails = false;
-                $(window).scroll(function () {
-                    if ($('body').scrollTop() > $('#search').offset().top) {
-                        $('.fa-arrow-up').css('display', 'block')
-                    } else {
-                        $('.fa-arrow-up').css('display', 'none')
-
-                    }
-                });
             }
+            $(window).scroll(function () {
+                if ($('body').scrollTop() > $('#search').offset().top) {
+                    $('.fa-arrow-up').css('display', 'block')
+                } else {
+                    $('.fa-arrow-up').css('display', 'none')
+
+                }
+            });
+            $scope.changeName = function (data) {
+                socket.emit('new user', $scope.name);
+                $scope.userNameInput = true;
+                $scope.afterName = true;
+            };
+
+            $scope.sendMessage = function (data) {
+                socket.emit('send message', $scope.message, $scope.name);
+                $scope.message = ''
+            };
+
+            socket.on('new message', function (data) {
+                $('.chatBox').append('<p class="well"><strong>' + data.user + '</strong>: ' + data.msg + '</p>');
+
+            })
+            $scope.editChatName = function () {
+                $scope.userNameInput = false;
+                $scope.afterName = false;
+            }
+
         }
     }
 })
@@ -563,27 +580,34 @@ app.directive('onePhone', function () {
                     }
                 });
                 $scope.sendComment = function () {
-                    var time = new Date();
-                    time = time.toLocaleDateString();
-                    var obj = {
-                        email: 'Anonim',
-                        comment: $scope.comment,
-                        time: time,
-                        name: name
+                    if (localStorage.userName == 'default') {
+                        $('.shadow').slideDown(500);
+                        $('#login-box').slideDown(500);
+                        $(window).scrollTop(0);
+                    } else {
+                        var time = new Date();
+                        time = time.toLocaleDateString();
+                        var obj = {
+                            email: 'Anonim',
+                            comment: $scope.comment,
+                            time: time,
+                            name: name
+                        }
+                        $http.post('http://localhost:8000/comments', obj)
+                            .then(function successCallback(response) {
+                                console.log("Success!");
+                            }, function errorCallback(response) {
+                                console.log("Error!!!" + response.err);
+                            });
+                        $http.get('http://localhost:8000/comments/' + name)
+                            .then(function successCallback(response) {
+                                $scope.comments = response.data;
+                            }, function errorCallback(response) {
+                                console.log("Error!!!" + response.err);
+                            });
+                        $scope.comment = '';
                     }
-                    $http.post('http://localhost:8000/comments', obj)
-                        .then(function successCallback(response) {
-                            console.log("Success!");
-                        }, function errorCallback(response) {
-                            console.log("Error!!!" + response.err);
-                        });
-                    $http.get('http://localhost:8000/comments/' + name)
-                        .then(function successCallback(response) {
-                            $scope.comments = response.data;
-                        }, function errorCallback(response) {
-                            console.log("Error!!!" + response.err);
-                        });
-                    $scope.comment = '';
+
                 }
             }
 
@@ -807,6 +831,7 @@ app.directive('adminka', function () {
             $scope.adminPanel = true;
             $scope.proceedToAdmin = function () {
                 $scope.adminPanel = false;
+                $scope.footer = true;
                 $scope.allGoodsHide = true;
                 $scope.authorized = true;
                 $scope.sliderHide = true;
@@ -815,6 +840,7 @@ app.directive('adminka', function () {
 
             }
             $scope.home = function () {
+                $scope.footer = false;
                 $scope.adminPanel = true;
                 $scope.authorized = false;
                 $scope.sliderHide = false;
@@ -1053,18 +1079,57 @@ app.directive('adminPhones', function () {
         }
     }
 })
+//Директива з унікальним атрибутом - для передачі файлів
+app.directive('fileModel', ['$parse', function ($parse) {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+            var model = $parse(attrs.fileModel);
+            var modelSetter = model.assign;
+            element.bind('change', function () {
+                scope.$apply(function () {
+                    modelSetter(scope, element[0].files[0]);
+                });
+            });
+        }
+    };
+}]);
 app.directive('adminTablets', function () {
     return {
         templateUrl: '/html/adminTablets.html',
         controller: function ($scope, $http) {
             //    ADD NEW Tablet
+            var imgNumberName = 0;
+
             $scope.addNewTablet = function () {
+                //генерація нової назви зображення після завантаження
+                if ($scope.tablets[0] == undefined) {
+                    imgNumberName = 1;
+                } else {
+                    imgNumberName = $scope.tablets[$scope.tablets.length - 1].id + 1;
+                };
+
+                //Завантаження зображення
+                var fd = new FormData();
+                fd.append(imgNumberName, $scope.tabletImg);
+                $http.post('http://localhost:8000/images', fd, {
+                        transformRequest: angular.identity,
+                        headers: {
+                            'Content-Type': undefined
+                        }
+                    })
+                    .then(function successCallback() {
+                        console.log("Uploaded!");
+                    }, function errorCallback(response) {
+                        console.log("Error!!!" + response.err);
+                    });
                 var tablet = {
                     name: $scope.newTabletName,
                     model: $scope.newTabletModel,
                     price: $scope.newTabletPrice,
                     display: $scope.newTabletDisplay,
-                    ram: $scope.newTabletRam
+                    ram: $scope.newTabletRam,
+                    src: imgNumberName
                 }
 
                 $http.post('http://localhost:8000/tablets', tablet)
@@ -1086,9 +1151,15 @@ app.directive('adminTablets', function () {
                 $scope.newTabletRam = '';
             }
             //    DELETE
-            $scope.removeTablet = function (id) {
+            $scope.removeTablet = function (id, src) {
 
                 $http.delete('http://localhost:8000/tablets/' + id).then(function successCallback(response) {
+                    console.log('success')
+                }, function errorCallback(response) {
+                    console.log('Error' + response.err)
+                })
+
+                $http.delete('http://localhost:8000/tabletImg/' + src).then(function successCallback(response) {
                     console.log('success')
                 }, function errorCallback(response) {
                     console.log('Error' + response.err)
@@ -1101,7 +1172,62 @@ app.directive('adminTablets', function () {
                         console.log("Error!!!" + response.err);
                     });
             }
+            //                EDIT IMG
+            $scope.countChanges = 1;
+            var newAdrrImg = "";
+            $scope.editImg = function (src, id) {
+                let changeSrc = src.split('-');
+                $scope.editImgShow = true;
+                console.log(src, id);
+                $scope.submitEditImg = function () {
 
+                    //                    Завантаження зображення
+                    var fd = new FormData();
+                    if (changeSrc[1] == undefined) {
+                        newAdrrImg = src + "-" + $scope.countChanges
+                    } else {
+                        $scope.countChanges += Number(changeSrc[1]);
+                        newAdrrImg = changeSrc[0] + "-" + $scope.countChanges;
+                        $scope.countChanges = 1;
+                    }
+                    console.log(newAdrrImg)
+                    fd.append(newAdrrImg, $scope.editImgModel);
+                    $http.post('http://localhost:8000/images', fd, {
+                            transformRequest: angular.identity,
+                            headers: {
+                                'Content-Type': undefined
+                            }
+                        })
+                        .then(function successCallback() {
+                            console.log("Uploaded!");
+                        }, function errorCallback(response) {
+                            console.log("Error!!!" + response.err);
+                        })
+
+                    var tablet = {
+                        src: newAdrrImg
+                    }
+                    $http.put('http://localhost:8000/tabletImgEdit/' + src, tablet).then(function successCallback(response) {
+                        console.log('success');
+                        $scope.editImgShow = false;
+                    }, function errorCallback(response) {
+                        console.log('Error ' + response.err)
+                    })
+                    $http.delete('http://localhost:8000/tabletImg/' + src).then(function successCallback(response) {
+                        console.log('success')
+                    }, function errorCallback(response) {
+                        console.log('Error' + response.err)
+                    })
+                    $http.get('http://localhost:8000/tablets')
+                        .then(function successCallback(response) {
+                            $scope.tablets = response.data;
+                        }, function errorCallback(response) {
+                            console.log("Error!!!" + response.err);
+                        });
+
+
+                }
+            }
             //    EDIT TABLET
             $scope.editTabletName = '';
             $scope.editTabletModel = '';
@@ -1153,6 +1279,11 @@ app.directive('adminTablets', function () {
         }
     }
 })
+app.directive('footer', function () {
+    return {
+        templateUrl: '/html/footer.html'
+    }
+});
 app.directive('adminHeadphones', function () {
     return {
         templateUrl: '/html/adminHeadphones.html',
@@ -1272,17 +1403,3 @@ app.filter('startFrom', function () {
 app.config(function ($locationProvider) {
     $locationProvider.html5Mode(true);
 })
-
-
-app.directive('scrollOnClick', function () {
-    return {
-        link: function (scope, $elm, attrs) {
-            $elm.on('click', function () {
-                var $target = $(attrs.href);
-                $("body").animate({
-                    scrollTop: $target.offset().top + 100 + 'px'
-                }, 300);
-            });
-        }
-    }
-});

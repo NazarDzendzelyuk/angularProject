@@ -1,6 +1,6 @@
 <div ng-hide='allPhones'>
     <div class="row goods">
-        <div class="col-md-4 item" ng-repeat='phone in phones | filter:search | orderBy:sortByPrice | startFrom:currentPage*pageSize | limitTo:pageSize' ng-click='info(phone.name)'>
+        <div class="col-md-4 item" ng-repeat='phone in phones | filter:search | orderBy:sortByPrice | startFrom:currentPhonePage*pageSize | limitTo:pageSize' ng-click='info(phone.name)'>
             <a href=""><img src='../img/phone.png' style="width: 87px"></a>
             <h6>{{phone.model}}</h6>
             <h6>Price: {{phone.price}} $</h6>

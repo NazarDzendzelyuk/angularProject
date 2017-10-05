@@ -74,7 +74,7 @@
             <h5>Edit</h5>
         </div>
     </div>
-    <div class="good" ng-repeat='headphone in headphones | filter:search | orderBy:sortByPrice | startFrom:currentPage*pageSize | limitTo:pageSize'>
+    <div class="good" ng-repeat='headphone in headphones | filter:search | orderBy:sortByPrice | startFrom:currentHeadphonePage*pageSize | limitTo:pageSize'>
         <div class="row">
             <div class="col-md-2">IMG</div>
             <div class="col-md-2">{{headphone.name}}</div>
@@ -106,8 +106,8 @@
     </div>
     <div class="row">
         <div class="col-md-12 text-center">
-            <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1" class="btn btn-submit">Previous</button> {{currentPage+1}}/{{numberOfHeadphonePages()}}
-            <button ng-disabled="currentPage >= getHeadPhones().length/pageSize - 1" ng-click="currentPage=currentPage+1" class="btn btn-submit">Next</button>
+            <button ng-disabled="currentHeadphonePage == 0" ng-click="currentHeadphonePage=currentHeadphonePage-1" class="btn btn-submit">Previous</button> {{currentHeadphonePage+1}}/{{numberOfHeadphonePages()}}
+            <button ng-disabled="currentHeadphonePage >= getHeadPhones().length/pageSize - 1" ng-click="currentHeadphonePage=currentHeadphonePage+1" class="btn btn-submit">Next</button>
         </div>
     </div>
 </div>

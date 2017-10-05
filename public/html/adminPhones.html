@@ -79,7 +79,7 @@
             <h5>Edit</h5>
         </div>
     </div>
-    <div class="good" ng-repeat='phone in phones | filter:search | startFrom:currentPage*pageSize | limitTo:pageSize'>
+    <div class="good" ng-repeat='phone in phones | filter:search | startFrom:currentPhonePage*pageSize | limitTo:pageSize'>
         <div class="row">
             <div class="col-md-2">IMG</div>
             <div class="col-md-1">{{phone.name}}</div>
@@ -114,8 +114,8 @@
     </div>
     <div class="row">
         <div class="col-md-12 text-center">
-            <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1" class="btn btn-submit">Previous</button> {{currentPage+1}}/{{numberOfPhonePages()}}
-            <button ng-disabled="currentPage >= getPhones().length/pageSize - 1" ng-click="currentPage=currentPage+1" class="btn btn-submit">Next</button>
+            <button ng-disabled="currentPhonePage == 0" ng-click="currentPhonePage=currentPhonePage-1" class="btn btn-submit">Previous</button> {{currentPhonePage+1}}/{{numberOfPhonePages()}}
+            <button ng-disabled="currentPhonePage >= getPhones().length/pageSize - 1" ng-click="currentPhonePage=currentPhonePage+1" class="btn btn-submit">Next</button>
         </div>
     </div>
 </div>
