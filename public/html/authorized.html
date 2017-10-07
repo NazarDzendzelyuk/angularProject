@@ -1,13 +1,32 @@
-    <section class="header--nav--section" ng-hide='authorized'>
-        <header class="header">
-            <nav class="header--nav">
-                <ul>
-                    <li><a href="#">Cart</a></li>
-                    <li><a href="#" ng-click='logout()'>Logout</a></li>
-                    <li ng-hide='showIfAdmin' id="admin" ng-click='proceedToAdmin()'><a href="#" >Admin</a></li>
-                    <li><a id="user">Welcome: {{userLogIn}}</a></li>
-                </ul>
-            </nav>
-        </header>
-    </section>
-    
+<section class="header--nav--section" ng-hide='authorized'>
+    <header class="header">
+        <nav class="header--nav">
+            <ul>
+                <li class="cart"><a href="#" >Cart</a>
+                    <div class="cartAmount"> {{phonesInCart.length}}</div>
+                    <ul class="submenu">
+                        <li class="row text-center">
+                            <div class="col-md-4 col-sm-3">Name</div>
+                            <div class="col-md-4 col-sm-3">Price</div>
+                            <div class="col-md-4 col-sm-3">
+                                Remove
+                            </div>
+                        </li>
+                        <li class="row text-center" ng-repeat='good in phonesInCart'>
+                            <div class="col-md-4 col-sm-3">{{good.model}}</div>
+                            <div class="col-md-4 col-sm-3">{{good.price}}</div>
+                            <div class="col-md-4 col-sm-3"><i class="fa fa-times" aria-hidden="true" ng-click='removeFromCart(good.id)'></i>
+                            </div>
+                        </li>
+                        <li class="row text-center totalAmount">
+                            <div class="col-md-12">Total price: {{total}}</div>
+                        </li>
+                    </ul>
+                </li>
+                <li><a href="#" ng-click='logout()'>Logout</a></li>
+                <li ng-hide='showIfAdmin' id="admin" ng-click='proceedToAdmin()'><a href="#">Admin</a></li>
+                <li><a id="user">Welcome: {{userLogIn}}</a></li>
+            </ul>
+        </nav>
+    </header>
+</section>

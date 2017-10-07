@@ -43,15 +43,15 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('send message', function (data, userName) {
         console.log(data);
-        if(userName==null || userName==''){
-            socket.name='Anonim'
-        }else{
-            socket.name=userName;
+        if (userName == null || userName == '') {
+            socket.name = 'Anonim'
+        } else {
+            socket.name = userName;
         }
-            io.sockets.emit('new message', {
-                msg: data,
-                user: socket.name
-            })
+        io.sockets.emit('new message', {
+            msg: data,
+            user: socket.name
+        })
     })
     socket.on('new user', function (data) {
         console.log(data);
@@ -398,6 +398,60 @@ app.get('/comments/:name', function (req, res) {
         res.status(200).send(rows);
     });
 });
+
+let cart = function () {
+    connection.query('' +
+        'CREATE TABLE IF NOT EXISTS cart (' +
+        'id int(11) NOT NULL AUTO_INCREMENT,' +
+        'email varchar(50), ' +
+        'model varchar(50), ' +
+        'name varchar(50), ' +
+        'price int(11), ' +
+        'total int(11), ' +
+        'PRIMARY KEY(id) )',
+        function (err) {
+            if (err) throw err;
+            console.log('CREATE TABLE IF NOT EXISTS cart')
+        });
+};
+
+cart();
+app.post('/addPhoneToCart', function (req, res) {
+    connection.query('INSERT INTO cart SET ?', req.body, function (err, result) {
+        if (err) throw err;
+        console.log('added to cart: ' + result.insertId)
+    })
+    res.sendStatus(200);
+})
+app.get('/addPhoneToCart/:email', function (req, res) {
+    connection.query('SELECT * FROM cart  WHERE email = ?', req.params.email, function (err, rows) {
+        if (err) throw err;
+        console.log('get good, email: ' + req.params.email);
+        res.status(200).send(rows);
+    });
+});
+//app.put('/addPhoneToCart/:email', function (req, res) {
+//    connection.query('UPDATE cart SET amount= ? WHERE email= ?', [req.body.amount, req.params.email], function (err) {
+//        if (err) throw err;
+//        console.log('good updated id: ' + req.params.id)
+//    })
+//    res.sendStatus(200);
+//})
+app.put('/addPhoneToCart/:email', function (req, res) {
+    connection.query('UPDATE cart SET total= ? WHERE email= ?', [req.body.total, req.params.email], function (err) {
+        if (err) throw err;
+        console.log('good updated id: ' + req.params.name)
+    })
+    res.sendStatus(200);
+})
+
+app.delete('/addPhoneToCart/:id', function (req, res) {
+    connection.query('DELETE FROM cart WHERE id= ?', req.params.id, function (err) {
+        if (err) throw err;
+        console.log('good deleted with id: ' + req.body.id)
+    })
+    res.sendStatus(200);
+})
 
 app.post('/images', upload.any(), function (req, res, next) {
     res.sendStatus(200);

@@ -241,15 +241,20 @@ app.directive('login', function () {
 
                 }
             };
-            $scope.addToCart = function () {
+
+            $scope.addTabletToCart = function () {
                 if (localStorage.userName == 'default') {
                     $('.shadow').slideDown(500);
                     $('#login-box').slideDown(500);
                     $(window).scrollTop(0);
-                } else {
-                    alert('s')
                 }
-
+            }
+            $scope.addHeadphoneToCart = function () {
+                if (localStorage.userName == 'default') {
+                    $('.shadow').slideDown(500);
+                    $('#login-box').slideDown(500);
+                    $(window).scrollTop(0);
+                }
             }
             $scope.authorize = function () {
                 let loginObj = {
@@ -527,7 +532,7 @@ app.directive('allGoods', function () {
             };
 
             socket.on('new message', function (data) {
-                $('.chatBox').append('<p class="well"><strong>' + data.user + '</strong>: ' + data.msg + '</p>');
+                $('.chatBox').append('<p><strong>' + data.user + '</strong>: ' + data.msg + '</p>');
 
             })
             $scope.editChatName = function () {
@@ -625,6 +630,83 @@ app.directive('onePhone', function () {
                     });
                 });
             });
+            $scope.addPhoneToCart = function (model, price, name) {
+                if (localStorage.userName == 'default') {
+                    $('.shadow').slideDown(500);
+                    $('#login-box').slideDown(500);
+                    $(window).scrollTop(0);
+                } else {
+                    var phoneInCart = {
+                        email: localStorage.userName,
+                        amount: 0,
+                        model: model,
+                        name: name,
+                        price: price,
+                        total: 0
+                    }
+                    $http.post('/addPhoneToCart', phoneInCart);
+                    $http.get('http://localhost:8000/addPhoneToCart/' + localStorage.userName)
+                        .then(function successCallback(response) {
+                            $scope.phonesInCart = response.data;
+                            for (var i = 0; i < $scope.phonesInCart.length; i++) {
+                                $scope.total += $scope.phonesInCart[i].price;
+                            }
+                            var obj = {
+                                total: $scope.total
+                            }
+                            $http.put('http://localhost:8000/addPhoneToCart/' + localStorage.userName, obj).then(function successCallback(response) {
+                                console.log('success');
+
+                            }, function errorCallback(response) {
+                                console.log('Error ' + response.err)
+                            })
+
+                        }, function errorCallback(response) {
+                            console.log("Error!!!" + response.err);
+                        });
+                    $scope.total = 0;
+                }
+            }
+
+            $scope.removeFromCart = function (id) {
+                $http.delete('http://localhost:8000/addPhoneToCart/' + id).then(function successCallback(response) {
+                    console.log('success')
+                }, function errorCallback(response) {
+                    console.log('Error' + response.err)
+                })
+                $http.get('http://localhost:8000/addPhoneToCart/' + localStorage.userName)
+                    .then(function successCallback(response) {
+                        $scope.phonesInCart = response.data;
+                        for (var i = 0; i < $scope.phonesInCart.length; i++) {
+                            $scope.total += $scope.phonesInCart[i].price;
+                        }
+                        var obj = {
+                            total: $scope.total
+                        }
+                        $http.put('http://localhost:8000/addPhoneToCart/' + localStorage.userName, obj).then(function successCallback(response) {
+                            console.log('success');
+
+                        }, function errorCallback(response) {
+                            console.log('Error ' + response.err)
+                        })
+
+                    }, function errorCallback(response) {
+                        console.log("Error!!!" + response.err);
+                    });
+                $scope.total = 0;
+            }
+            setInterval(function () {
+                $http.get('http://localhost:8000/addPhoneToCart/' + localStorage.userName)
+                    .then(function successCallback(response) {
+                        $scope.phonesInCart = response.data;
+                        for (var i = 0; i < $scope.phonesInCart.length; i++) {
+                            $scope.total = $scope.phonesInCart[i].total
+                        }
+
+                    }, function errorCallback(response) {
+                        console.log("Error!!!" + response.err);
+                    });
+            }, 3000)
         }
     }
 })
@@ -783,7 +865,8 @@ app.directive('oneHeadphone', function () {
 })
 app.directive('authorized', function () {
     return {
-        templateUrl: '/html/authorized.html'
+        templateUrl: '/html/authorized.html',
+        controller: function ($scope, $http) {}
     }
 })
 app.directive('allPhones', function () {

@@ -241,7 +241,6 @@ input.ng-invalid:focus {
 
 /*LOGIN END*/
 
-
 /*SLIDER STARTS*/
 
 @font-face {
@@ -381,18 +380,28 @@ a {
     text-decoration: none;
 }
 
-.header {
+.headerAdmin {
     background: black;
     height: 40px;
     width: 100%;
 }
-.header--nav ul {
+
+.header {
+    background: black;
+    height: 40px;
+    width: 100%;
+    position: fixed;
+    z-index: 3;
+}
+
+.header--nav > ul {
     display: flex;
     margin-left: 50px;
 }
 
 .header--nav ul li {
     margin: 5px 20px;
+    transition: 1s;
 }
 
 .header--nav ul li a {
@@ -402,13 +411,50 @@ a {
 
 .header--nav ul li a:hover {
     color: white;
+
     text-decoration: none;
 }
 
+.submenu {
+    position: absolute;
+    color: white;
+    background: black;
+    top: 32px;
+    left: 35px;
+    max-height: 410px;
+    overflow-y: auto;
+    display: none;
+}
+
+.cart:hover .submenu {
+    display: block;
+
+}
+
+.cartAmount {
+    color: white;
+    background: red;
+    border-radius: 12px;
+    display: inline-block;
+    min-width: 23px;
+    height: 23px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.totalAmount {
+    padding: 25px 0;
+}
+
+.fa-times:hover {
+    color: red;
+}
+
 .sliderSection--slider {
-    height: 97vh;
+    height: 100vh;
     position: relative;
 }
+
 .filter {
     margin-top: 50px;
 }
@@ -472,8 +518,9 @@ a {
 .chatBox {
     height: 370px;
     border: 1px solid lightgrey;
-    overflow: auto;
     margin-top: 15px;
+    word-wrap: break-word;
+    overflow-y: auto;
 }
 
 .items input,
@@ -584,20 +631,23 @@ form[name='chatForm'] span {
     margin-top: 35px;
 }
 
-.gallery{
+.gallery {
     text-align: center;
     border: 1px solid lightgrey;
 }
-.fullInfo{
-    text-align: center
-    margin: 20px;
+
+.fullInfo {
+    text-align: center margin: 20px;
 }
-.product{
+
+.product {
     margin-top: 50px;
 }
-#comment{
+
+#comment {
     width: 250px;
 }
-.back{
+
+.back {
     height: 480px;
 }

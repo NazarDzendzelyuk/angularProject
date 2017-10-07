@@ -33,14 +33,13 @@
                         </div>
                         <div ng-show='afterName'>
                             Yor name is: {{name}}
-                            <i class="fa fa-pencil" aria-hidden="true" ng-click='editChatName()'></i>
+                            <i class="fa fa-pencil" aria-hidden="true" title='Edit' ng-click='editChatName()'></i>
 
                         </div>
                     </div><button class="btn btn-submit" ng-click='changeName()' ng-disabled='chatForm.name.$error.required' ng-hide='userNameInput'>Ok</button>
                     <span ng-show="chatForm.name.$touched && chatForm.name.$error.required" style="color: red">Can't be empty</span>
                     <div class="chatBox">
-                        <!--                        <p ng-repeat='message in messages'>{{message.date}} <b>{{message.username}}:</b> {{message.message}}</p>-->
-                    </div>
+                     </div>
                     <div class="message">
                         <div class="input-group stylish-input-group">
                             <input type="text" class="form-control" placeholder="Type your message" ng-model='message' name="message" required>
