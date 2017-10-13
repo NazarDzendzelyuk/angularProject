@@ -36,6 +36,8 @@ var cbpBGSlideshow;
 var app = angular.module('myApp', ['ngRoute']);
 
 app.controller('myCtrl', function ($scope, $filter, $http, $window) {
+    $scope.imgNumberName = 0;
+
     $('.fa-angle-double-down').on('click', function () {
         $(window).animate({
             scrollTop: $('.sliderSection').offset().top + 100 + 'vh'
@@ -65,7 +67,7 @@ app.controller('myCtrl', function ($scope, $filter, $http, $window) {
         .then(function successCallback(response) {
             $scope.phones = response.data;
         }, function errorCallback(response) {
-            console.log("Error!!!" + response.err);
+            console.log('Error!!!' + response.err);
         });
 
     //PAGINATION
@@ -198,13 +200,13 @@ app.directive('login', function () {
                                 if (i == $scope.users.length - 1) {
                                     $http.post('http://localhost:8000/signUp', obj)
                                         .then(function successCallback(response) {
-                                            console.log("Success!");
+                                            console.log('Success!');
                                             $('#signup-box').fadeOut(500);
                                             $('.shadow').slideDown(500);
                                             $('#login-box').slideDown(500);
 
                                         }, function errorCallback(response) {
-                                            console.log("Error!!!" + response.err);
+                                            console.log('Error!!!' + response.err);
                                         });
                                     break;
                                 }
@@ -212,7 +214,7 @@ app.directive('login', function () {
                             }
                         }
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
 
             }
@@ -228,10 +230,10 @@ app.directive('login', function () {
             }
             //Загрузка авторизованого юзера (якщо є)
             if (localStorage.userName == undefined) {
-                localStorage.userName = "default";
+                localStorage.userName = 'default';
 
             } else {
-                if (localStorage.userName != "default") {
+                if (localStorage.userName != 'default') {
                     $scope.userLogIn = localStorage.userName;
                     $scope.login = true;
                     $scope.authorized = false;
@@ -257,12 +259,25 @@ app.directive('login', function () {
                 }
             }
             $scope.authorize = function () {
+                var socket = io.connect();
+                socket.on('cart', function (cart) {
+                    $http.get('http://localhost:8000/getCart/' + localStorage.userName)
+                        .then(function successCallback(response) {
+                            $scope.cart = response.data;
+                            for (var i = 0; i < $scope.cart.length; i++) {
+                                $scope.total = $scope.cart[i].total
+                            }
+                        }, function errorCallback(response) {
+                            console.log('Error!!!' + response.err);
+                        });
+                })
+
                 let loginObj = {
                     email: $scope.logEmail,
                     password: $scope.logPass
                 }
                 $http.post('http://localhost:8000/login', loginObj).then(function successCallback(response) {
-                    if (response.data == "welcome") {
+                    if (response.data == 'welcome') {
                         if ($scope.logEmail == 'n.dzendzelyuk@gmail.com') {
                             $scope.showIfAdmin = false;
 
@@ -275,7 +290,7 @@ app.directive('login', function () {
                         $('#login-box').slideUp(500);
                         $scope.authorized = false;
                         $scope.login = true;
-                        $scope.user = "";
+                        $scope.user = '';
                         localStorage.userName = $scope.userLogIn;
                         $scope.logEmail = '';
                         $scope.logPass = '';
@@ -283,24 +298,25 @@ app.directive('login', function () {
                         $scope.user = response.data;
                     };
                 }, function errorCallback(response) {
-                    console.log("Error!!!" + response.err);
+                    console.log('Error!!!' + response.err);
                 });
 
             }
             //Розлогінитись
             $scope.logout = function () {
+                $scope.total = 0;
                 let logoutObj = {
                     email: localStorage.userName
                 };
                 $http.post('http://localhost:8000/logout', logoutObj)
                     .then(function successCallback(response) {
-                        console.log("Good by!")
+                        console.log('Good by!')
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
                 $scope.login = false;
                 $scope.authorized = true;
-                localStorage.userName = "default";
+                localStorage.userName = 'default';
             };
 
             //    LOGIN THROUGH SOCIAL NETWORK
@@ -312,7 +328,7 @@ app.directive('login', function () {
                     'cookiepolicy': 'single_host_origin',
                     'callback': function (result) {
                         if (result['status']['signed_in']) {
-                            document.location = "../html/tablets.html";
+                            document.location = '../html/tablets.html';
                             var request = gapi.client.plus.people.get({
                                 'userId': 'me'
                             });
@@ -335,7 +351,7 @@ app.directive('login', function () {
                     'cookiepolicy': 'single_host_origin',
                     'callback': function (result) {
                         if (result['status']['signed_in']) {
-                            document.location = "../html/tablets.html"
+                            document.location = '../html/tablets.html'
                         }
                     },
                     'approvalprompt': 'force',
@@ -347,7 +363,7 @@ app.directive('login', function () {
             $scope.onFbReg = function () {
                 FB.login(function (response) {
                     if (response.authResponse) {
-                        document.location = "../html/tablets.html"
+                        document.location = '../html/tablets.html'
                     } else {
                         console.log('error')
                     }
@@ -359,7 +375,7 @@ app.directive('login', function () {
             $scope.onFbLogin = function () {
                 FB.login(function (response) {
                     if (response.authResponse) {
-                        document.location = "../html/tablets.html"
+                        document.location = '../html/tablets.html'
                     } else {
                         console.log('error')
                     }
@@ -389,13 +405,10 @@ app.directive('slider', function () {
                         $navNext: $controls.find('span.cbp-binext'),
                         $navPlayPause: $controls.find('span.cbp-bipause')
                     },
-                    // current item´s index
                     current = 0,
                     // timeout
                     slideshowtime,
-                    // true if the slideshow is active
                     isSlideshowActive = true,
-                    // it takes 3.5 seconds to change the background image
                     interval = 3500;
 
                 function init(config) {
@@ -562,7 +575,7 @@ app.directive('onePhone', function () {
                     .then(function successCallback(response) {
                         $scope.onePhone = response.data;
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
                 $http.get('http://localhost:8000/comments/' + name)
                     .then(function successCallback(response) {
@@ -574,7 +587,7 @@ app.directive('onePhone', function () {
                             return Math.ceil($scope.getComments().length / $scope.pageSize);
                         }
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
                 $(window).scroll(function () {
                     if ($('body').scrollTop() > $('#search').offset().top) {
@@ -600,15 +613,15 @@ app.directive('onePhone', function () {
                         }
                         $http.post('http://localhost:8000/comments', obj)
                             .then(function successCallback(response) {
-                                console.log("Success!");
+                                console.log('Success!');
                             }, function errorCallback(response) {
-                                console.log("Error!!!" + response.err);
+                                console.log('Error!!!' + response.err);
                             });
                         $http.get('http://localhost:8000/comments/' + name)
                             .then(function successCallback(response) {
                                 $scope.comments = response.data;
                             }, function errorCallback(response) {
-                                console.log("Error!!!" + response.err);
+                                console.log('Error!!!' + response.err);
                             });
                         $scope.comment = '';
                     }
@@ -616,45 +629,47 @@ app.directive('onePhone', function () {
                 }
             }
 
-            $scope.$watch("onePhone", function (newValue, oldValue) {
-                $('.gallery').each(function () {
-                    $(this).magnificPopup({
-                        delegate: 'a',
-                        type: 'image',
-                        mainClass: 'mfp-img-mobile',
-                        gallery: {
-                            enabled: true,
-                            navigateByImgClick: true,
-                            preload: [0, 1]
+            var socket = io.connect();
+
+            socket.on('cart', function (cart) {
+                $http.get('http://localhost:8000/getCart/' + localStorage.userName)
+                    .then(function successCallback(response) {
+                        $scope.cart = response.data;
+                        for (var i = 0; i < $scope.cart.length; i++) {
+
+                            $scope.total = $scope.cart[i].total
                         }
+                    }, function errorCallback(response) {
+                        console.log('Error!!!' + response.err);
                     });
-                });
-            });
-            $scope.addPhoneToCart = function (model, price, name) {
+            })
+
+            $scope.addPhoneToCart = function (model, price, name, src) {
                 if (localStorage.userName == 'default') {
                     $('.shadow').slideDown(500);
                     $('#login-box').slideDown(500);
                     $(window).scrollTop(0);
                 } else {
-                    var phoneInCart = {
+                    var cart = {
                         email: localStorage.userName,
-                        amount: 0,
                         model: model,
                         name: name,
                         price: price,
+                        src: src,
                         total: 0
                     }
-                    $http.post('/addPhoneToCart', phoneInCart);
-                    $http.get('http://localhost:8000/addPhoneToCart/' + localStorage.userName)
+                    $http.post('/addPhoneToCart', cart);
+                    $http.get('http://localhost:8000/getCart/' + localStorage.userName)
                         .then(function successCallback(response) {
-                            $scope.phonesInCart = response.data;
-                            for (var i = 0; i < $scope.phonesInCart.length; i++) {
-                                $scope.total += $scope.phonesInCart[i].price;
+                            $scope.cart = response.data;
+
+                            for (var i = 0; i < $scope.cart.length; i++) {
+                                $scope.total += $scope.cart[i].price;
                             }
                             var obj = {
                                 total: $scope.total
                             }
-                            $http.put('http://localhost:8000/addPhoneToCart/' + localStorage.userName, obj).then(function successCallback(response) {
+                            $http.put('http://localhost:8000/updateCart/' + localStorage.userName, obj).then(function successCallback(response) {
                                 console.log('success');
 
                             }, function errorCallback(response) {
@@ -662,51 +677,72 @@ app.directive('onePhone', function () {
                             })
 
                         }, function errorCallback(response) {
-                            console.log("Error!!!" + response.err);
+                            console.log('Error!!!' + response.err);
                         });
                     $scope.total = 0;
                 }
             }
 
             $scope.removeFromCart = function (id) {
-                $http.delete('http://localhost:8000/addPhoneToCart/' + id).then(function successCallback(response) {
-                    console.log('success')
+                $http.delete('http://localhost:8000/deleteFromCart/' + id).then(function successCallback(response) {
+                    console.log('success');
+                    $http.get('http://localhost:8000/getCart/' + localStorage.userName)
+                        .then(function successCallback(response) {
+                            $scope.cart = response.data;
+                            for (var i = 0; i < $scope.cart.length; i++) {
+                                $scope.total += $scope.cart[i].price;
+                            }
+                            var obj = {
+                                total: $scope.total
+                            }
+                            $http.put('http://localhost:8000/updateCart/' + localStorage.userName, obj).then(function successCallback(response) {
+                                console.log('success');
+
+                            }, function errorCallback(response) {
+                                console.log('Error ' + response.err)
+                            })
+
+                        }, function errorCallback(response) {
+                            console.log('Error!!!' + response.err);
+                        });
                 }, function errorCallback(response) {
                     console.log('Error' + response.err)
                 })
-                $http.get('http://localhost:8000/addPhoneToCart/' + localStorage.userName)
-                    .then(function successCallback(response) {
-                        $scope.phonesInCart = response.data;
-                        for (var i = 0; i < $scope.phonesInCart.length; i++) {
-                            $scope.total += $scope.phonesInCart[i].price;
-                        }
-                        var obj = {
-                            total: $scope.total
-                        }
-                        $http.put('http://localhost:8000/addPhoneToCart/' + localStorage.userName, obj).then(function successCallback(response) {
-                            console.log('success');
 
-                        }, function errorCallback(response) {
-                            console.log('Error ' + response.err)
-                        })
-
-                    }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
-                    });
                 $scope.total = 0;
             }
-            setInterval(function () {
-                $http.get('http://localhost:8000/addPhoneToCart/' + localStorage.userName)
-                    .then(function successCallback(response) {
-                        $scope.phonesInCart = response.data;
-                        for (var i = 0; i < $scope.phonesInCart.length; i++) {
-                            $scope.total = $scope.phonesInCart[i].total
-                        }
+        }
+    }
+})
 
-                    }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
-                    });
-            }, 3000)
+app.directive('checkout', function () {
+    return {
+        templateUrl: '/html/checkOut.html',
+        controller: function ($scope, $http) {
+            $scope.checkout = function () {
+                $scope.sliderHide = true;
+                $scope.allGoodsHide = true;
+                $scope.checkoutBlock = true;
+                $('.header').css('position', 'relative');
+                $scope.buyerEmail = localStorage.userName;
+            }
+            $scope.submitPurchase = function () {
+                $scope.myWindow = window.open("", "", "width=500,height=500");
+                $scope.myWindow.document.write('Thanks for your purchase. Our manager will contact you as soon as possible');
+                var goods = {
+
+                }
+                $scope.sliderHide = false;
+                $scope.allGoodsHide = false;
+                $scope.checkoutBlock = false;
+            }
+
+            $scope.backToShopping = function () {
+                $scope.sliderHide = false;
+                $scope.allGoodsHide = false;
+                $scope.checkoutBlock = false;
+            }
+
         }
     }
 })
@@ -724,7 +760,7 @@ app.directive('oneTablet', function () {
                     .then(function successCallback(response) {
                         $scope.oneTablet = response.data;
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
                 $http.get('http://localhost:8000/comments/' + name)
                     .then(function successCallback(response) {
@@ -736,7 +772,7 @@ app.directive('oneTablet', function () {
                             return Math.ceil($scope.getComments().length / $scope.pageSize);
                         }
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
                 $(window).scroll(function () {
                     if ($('body').scrollTop() > $('#search').offset().top) {
@@ -757,33 +793,57 @@ app.directive('oneTablet', function () {
                     }
                     $http.post('http://localhost:8000/comments', obj)
                         .then(function successCallback(response) {
-                            console.log("Success!");
+                            console.log('Success!');
                         }, function errorCallback(response) {
-                            console.log("Error!!!" + response.err);
+                            console.log('Error!!!' + response.err);
                         });
                     $http.get('http://localhost:8000/comments/' + name)
                         .then(function successCallback(response) {
                             $scope.comments = response.data;
                         }, function errorCallback(response) {
-                            console.log("Error!!!" + response.err);
+                            console.log('Error!!!' + response.err);
                         });
                     $scope.comment = '';
                 }
             }
-            $scope.$watch("oneTablet", function (newValue, oldValue) {
-                $('.gallery').each(function () {
-                    $(this).magnificPopup({
-                        delegate: 'a',
-                        type: 'image',
-                        mainClass: 'mfp-img-mobile',
-                        gallery: {
-                            enabled: true,
-                            navigateByImgClick: true,
-                            preload: [0, 1]
-                        }
-                    });
-                });
-            });
+
+            $scope.addTabletToCart = function (name, price, model, src) {
+                if (localStorage.userName == 'default') {
+                    $('.shadow').slideDown(500);
+                    $('#login-box').slideDown(500);
+                    $(window).scrollTop(0);
+                } else {
+                    var cart = {
+                        email: localStorage.userName,
+                        model: model,
+                        name: name,
+                        price: price,
+                        src: src,
+                        total: 0
+                    }
+                    $http.post('/addTabletToCart', cart);
+                    $http.get('http://localhost:8000/getCart/' + localStorage.userName)
+                        .then(function successCallback(response) {
+                            $scope.cart = response.data;
+                            for (var i = 0; i < $scope.cart.length; i++) {
+                                $scope.total += $scope.cart[i].price;
+                            }
+                            var obj = {
+                                total: $scope.total
+                            }
+                            $http.put('http://localhost:8000/updateCart/' + localStorage.userName, obj).then(function successCallback(response) {
+                                console.log('success');
+
+                            }, function errorCallback(response) {
+                                console.log('Error ' + response.err)
+                            })
+
+                        }, function errorCallback(response) {
+                            console.log('Error!!!' + response.err);
+                        });
+                    $scope.total = 0;
+                }
+            }
         }
     }
 })
@@ -800,7 +860,7 @@ app.directive('oneHeadphone', function () {
                     .then(function successCallback(response) {
                         $scope.oneHeadphone = response.data;
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
                 $http.get('http://localhost:8000/comments/' + name)
                     .then(function successCallback(response) {
@@ -812,7 +872,7 @@ app.directive('oneHeadphone', function () {
                             return Math.ceil($scope.getComments().length / $scope.pageSize);
                         }
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
                 $(window).scroll(function () {
                     if ($('body').scrollTop() > $('#search').offset().top) {
@@ -833,33 +893,58 @@ app.directive('oneHeadphone', function () {
                     }
                     $http.post('http://localhost:8000/comments', obj)
                         .then(function successCallback(response) {
-                            console.log("Success!");
+                            console.log('Success!');
                         }, function errorCallback(response) {
-                            console.log("Error!!!" + response.err);
+                            console.log('Error!!!' + response.err);
                         });
                     $http.get('http://localhost:8000/comments/' + name)
                         .then(function successCallback(response) {
                             $scope.comments = response.data;
                         }, function errorCallback(response) {
-                            console.log("Error!!!" + response.err);
+                            console.log('Error!!!' + response.err);
                         });
                     $scope.comment = '';
                 }
             }
-            $scope.$watch("oneHeadphone", function (newValue, oldValue) {
-                $('.gallery').each(function () {
-                    $(this).magnificPopup({
-                        delegate: 'a',
-                        type: 'image',
-                        mainClass: 'mfp-img-mobile',
-                        gallery: {
-                            enabled: true,
-                            navigateByImgClick: true,
-                            preload: [0, 1]
-                        }
-                    });
-                });
-            });
+
+            $scope.addHeadphoneToCart = function (name, price, model, src) {
+                if (localStorage.userName == 'default') {
+                    $('.shadow').slideDown(500);
+                    $('#login-box').slideDown(500);
+                    $(window).scrollTop(0);
+                } else {
+                    var cart = {
+                        email: localStorage.userName,
+                        model: model,
+                        name: name,
+                        price: price,
+                        src: src,
+                        total: 0
+                    }
+                    $http.post('/addHeadphoneToCart', cart);
+                    $http.get('http://localhost:8000/getCart/' + localStorage.userName)
+                        .then(function successCallback(response) {
+                            $scope.cart = response.data;
+                            for (var i = 0; i < $scope.cart.length; i++) {
+                                $scope.total += $scope.cart[i].price;
+                            }
+                            var obj = {
+                                total: $scope.total
+                            }
+                            $http.put('http://localhost:8000/updateCart/' + localStorage.userName, obj).then(function successCallback(response) {
+                                console.log('success');
+
+                            }, function errorCallback(response) {
+                                console.log('Error ' + response.err)
+                            })
+
+                        }, function errorCallback(response) {
+                            console.log('Error!!!' + response.err);
+                        });
+                    $scope.total = 0;
+                }
+            }
+
         }
     }
 })
@@ -899,7 +984,7 @@ app.directive('adminka', function () {
                         $scope.allHeadphones = false;
                         $scope.allTablets = true;
                         break;
-                    case "showPhone()":
+                    case 'showPhone()':
                         $scope.allPhones = false;
                         $scope.allHeadphones = false;
                         $scope.allTablets = false;
@@ -986,15 +1071,15 @@ app.directive('adminCategories', function () {
 
                 $http.post('http://localhost:8000/categories', category)
                     .then(function successCallback(response) {
-                        console.log("Success!");
+                        console.log('Success!');
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
                 $http.get('http://localhost:8000/categories')
                     .then(function successCallback(response) {
                         $scope.categories = response.data;
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
                 $scope.newCategory = '';
                 $scope.newSource = '';
@@ -1012,14 +1097,14 @@ app.directive('adminCategories', function () {
                     .then(function successCallback(response) {
                         $scope.categories = response.data;
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
             }
 
             //    EDIT CATEGORY
             $scope.editCategoryName = '';
             $scope.editSource = '';
-            $scope.editIndex = "";
+            $scope.editIndex = '';
             $scope.editBlock = false;
 
 
@@ -1038,7 +1123,7 @@ app.directive('adminCategories', function () {
                 };
                 $http.put('http://localhost:8000/categories/' + $scope.editIndex, obj).then(function successCallback(response) {
                     console.log('success');
-                    $scope.editIndex = "";
+                    $scope.editIndex = '';
                     $scope.editCategoryName = '';
                     $scope.editSource = '';
                     $scope.editBlock = false;
@@ -1049,7 +1134,7 @@ app.directive('adminCategories', function () {
                     .then(function successCallback(response) {
                         $scope.categories = response.data;
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
 
             }
@@ -1061,27 +1146,49 @@ app.directive('adminPhones', function () {
         templateUrl: '/html/adminPhones.html',
         controller: function ($scope, $http) {
             //    ADD NEW PHONE
+
             $scope.addNewPhone = function () {
+                //генерація нової назви зображення після завантаження
+                if ($scope.phones[0] == undefined) {
+                    $scope.imgNumberName = $scope.phones.length + 1 + 'p';
+                } else {
+                    $scope.imgNumberName = $scope.phones[$scope.phones.length - 1].id + 1 + 'p';
+                };
+                //Завантаження зображення
+                var fd = new FormData();
+                fd.append($scope.imgNumberName, $scope.phoneImg);
+                $http.post('http://localhost:8000/images', fd, {
+                        transformRequest: angular.identity,
+                        headers: {
+                            'Content-Type': undefined
+                        }
+                    })
+                    .then(function successCallback() {
+                        console.log('Uploaded!');
+                    }, function errorCallback(response) {
+                        console.log('Error!!!' + response.err);
+                    });
                 var phone = {
                     name: $scope.newName,
                     model: $scope.newModel,
                     price: $scope.newPrice,
                     display: $scope.newDisplay,
                     camera: $scope.newCamera,
-                    ram: $scope.newRam
+                    ram: $scope.newRam,
+                    src: $scope.imgNumberName
                 }
 
                 $http.post('http://localhost:8000/phones', phone)
                     .then(function successCallback(response) {
-                        console.log("Success!");
+                        console.log('Success!');
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
                 $http.get('http://localhost:8000/phones')
                     .then(function successCallback(response) {
                         $scope.phones = response.data;
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
                 $scope.newName = '';
                 $scope.newModel = '';
@@ -1091,10 +1198,15 @@ app.directive('adminPhones', function () {
                 $scope.newRam = '';
             }
             //    DELETE
-            $scope.removePhone = function (id) {
+            $scope.removePhone = function (id, src) {
 
                 $http.delete('http://localhost:8000/phones/' + id).then(function successCallback(response) {
-                    console.log('success')
+                    console.log('success');
+                    $http.delete('http://localhost:8000/phoneImg/' + src).then(function successCallback(response) {
+                        console.log('success')
+                    }, function errorCallback(response) {
+                        console.log('Error' + response.err)
+                    })
                 }, function errorCallback(response) {
                     console.log('Error' + response.err)
                 })
@@ -1103,9 +1215,68 @@ app.directive('adminPhones', function () {
                     .then(function successCallback(response) {
                         $scope.phones = response.data;
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
             }
+
+            //            EDIT IMG
+            $scope.countChanges = 1;
+            var newAdrrImg = '';
+            $scope.editPhoneImg = function (src, id) {
+                let changeSrc = src.split('-');
+                $scope.editPhoneImgShow = true;
+                console.log(src, id);
+                $scope.submitPhoneEditImg = function () {
+
+                    //                    Завантаження зображення
+                    var fd = new FormData();
+                    if (changeSrc[1] == undefined) {
+                        newAdrrImg = src + '-' + $scope.countChanges
+                    } else {
+                        $scope.countChanges += Number(changeSrc[1]);
+                        newAdrrImg = changeSrc[0] + '-' + $scope.countChanges;
+                        $scope.countChanges = 1;
+                    }
+                    console.log(newAdrrImg)
+                    fd.append(newAdrrImg, $scope.editPhoneImgModel);
+                    $http.post('http://localhost:8000/images', fd, {
+                            transformRequest: angular.identity,
+                            headers: {
+                                'Content-Type': undefined
+                            }
+                        })
+                        .then(function successCallback() {
+                            console.log('Uploaded!');
+                        }, function errorCallback(response) {
+                            console.log('Error!!!' + response.err);
+                        })
+
+                    var phone = {
+                        src: newAdrrImg
+                    }
+                    $http.put('http://localhost:8000/phoneImgEdit/' + src, phone).then(function successCallback(response) {
+                        console.log('success');
+                        $scope.editPhoneImgShow = false;
+                    }, function errorCallback(response) {
+                        console.log('Error ' + response.err)
+                    })
+                    $http.delete('http://localhost:8000/phoneImg/' + src).then(function successCallback(response) {
+                        console.log('success')
+                    }, function errorCallback(response) {
+                        console.log('Error' + response.err)
+                    })
+                    $http.get('http://localhost:8000/phones')
+                        .then(function successCallback(response) {
+                            $scope.phones = response.data;
+                        }, function errorCallback(response) {
+                            console.log('Error!!!' + response.err);
+                        });
+
+
+                }
+            }
+
+
 
             //    EDIT PHONE
             $scope.editName = '';
@@ -1115,7 +1286,7 @@ app.directive('adminPhones', function () {
             $scope.editCamera = '';
             $scope.editRam = '';
             $scope.editBlock = false;
-            $scope.editIndex = "";
+            $scope.editIndex = '';
 
 
             $scope.editPhone = function (index, name, model, price, display, camera, ram) {
@@ -1140,7 +1311,7 @@ app.directive('adminPhones', function () {
                 };
                 $http.put('http://localhost:8000/phones/' + $scope.editIndex, obj).then(function successCallback(response) {
                     console.log('success');
-                    $scope.editIndex = "";
+                    $scope.editIndex = '';
                     $scope.editName = '';
                     $scope.editModel = '';
                     $scope.editPrice = '';
@@ -1155,7 +1326,7 @@ app.directive('adminPhones', function () {
                     .then(function successCallback(response) {
                         $scope.phones = response.data;
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
 
             }
@@ -1182,19 +1353,19 @@ app.directive('adminTablets', function () {
         templateUrl: '/html/adminTablets.html',
         controller: function ($scope, $http) {
             //    ADD NEW Tablet
-            var imgNumberName = 0;
+
 
             $scope.addNewTablet = function () {
                 //генерація нової назви зображення після завантаження
                 if ($scope.tablets[0] == undefined) {
-                    imgNumberName = 1;
+                    $scope.imgNumberName = $scope.tablets.length + 1 + 't';
                 } else {
-                    imgNumberName = $scope.tablets[$scope.tablets.length - 1].id + 1;
+                    $scope.imgNumberName = $scope.tablets[$scope.tablets.length - 1].id + 1 + 't';
                 };
 
                 //Завантаження зображення
                 var fd = new FormData();
-                fd.append(imgNumberName, $scope.tabletImg);
+                fd.append($scope.imgNumberName, $scope.tabletImg);
                 $http.post('http://localhost:8000/images', fd, {
                         transformRequest: angular.identity,
                         headers: {
@@ -1202,9 +1373,9 @@ app.directive('adminTablets', function () {
                         }
                     })
                     .then(function successCallback() {
-                        console.log("Uploaded!");
+                        console.log('Uploaded!');
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
                 var tablet = {
                     name: $scope.newTabletName,
@@ -1212,20 +1383,20 @@ app.directive('adminTablets', function () {
                     price: $scope.newTabletPrice,
                     display: $scope.newTabletDisplay,
                     ram: $scope.newTabletRam,
-                    src: imgNumberName
+                    src: $scope.imgNumberName
                 }
 
                 $http.post('http://localhost:8000/tablets', tablet)
                     .then(function successCallback(response) {
-                        console.log("Success!");
+                        console.log('Success!');
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
                 $http.get('http://localhost:8000/tablets')
                     .then(function successCallback(response) {
                         $scope.tablets = response.data;
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
                 $scope.newTabletName = '';
                 $scope.newTabletModel = '';
@@ -1237,27 +1408,28 @@ app.directive('adminTablets', function () {
             $scope.removeTablet = function (id, src) {
 
                 $http.delete('http://localhost:8000/tablets/' + id).then(function successCallback(response) {
-                    console.log('success')
+                    console.log('success');
+                    $http.delete('http://localhost:8000/tabletImg/' + src).then(function successCallback(response) {
+                        console.log('success')
+                    }, function errorCallback(response) {
+                        console.log('Error' + response.err)
+                    })
                 }, function errorCallback(response) {
                     console.log('Error' + response.err)
                 })
 
-                $http.delete('http://localhost:8000/tabletImg/' + src).then(function successCallback(response) {
-                    console.log('success')
-                }, function errorCallback(response) {
-                    console.log('Error' + response.err)
-                })
+
 
                 $http.get('http://localhost:8000/tablets')
                     .then(function successCallback(response) {
                         $scope.tablets = response.data;
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
             }
             //                EDIT IMG
-            $scope.countChanges = 1;
-            var newAdrrImg = "";
+            $scope.countChanges = 2;
+            var newAdrrImg = '';
             $scope.editImg = function (src, id) {
                 let changeSrc = src.split('-');
                 $scope.editImgShow = true;
@@ -1267,11 +1439,11 @@ app.directive('adminTablets', function () {
                     //                    Завантаження зображення
                     var fd = new FormData();
                     if (changeSrc[1] == undefined) {
-                        newAdrrImg = src + "-" + $scope.countChanges
+                        newAdrrImg = src + '-' + $scope.countChanges
                     } else {
                         $scope.countChanges += Number(changeSrc[1]);
-                        newAdrrImg = changeSrc[0] + "-" + $scope.countChanges;
-                        $scope.countChanges = 1;
+                        newAdrrImg = changeSrc[0] + '-' + $scope.countChanges;
+                        $scope.countChanges = 2;
                     }
                     console.log(newAdrrImg)
                     fd.append(newAdrrImg, $scope.editImgModel);
@@ -1282,9 +1454,9 @@ app.directive('adminTablets', function () {
                             }
                         })
                         .then(function successCallback() {
-                            console.log("Uploaded!");
+                            console.log('Uploaded!');
                         }, function errorCallback(response) {
-                            console.log("Error!!!" + response.err);
+                            console.log('Error!!!' + response.err);
                         })
 
                     var tablet = {
@@ -1305,7 +1477,7 @@ app.directive('adminTablets', function () {
                         .then(function successCallback(response) {
                             $scope.tablets = response.data;
                         }, function errorCallback(response) {
-                            console.log("Error!!!" + response.err);
+                            console.log('Error!!!' + response.err);
                         });
 
 
@@ -1318,7 +1490,7 @@ app.directive('adminTablets', function () {
             $scope.editTabletDisplay = '';
             $scope.editTabletRam = '';
             $scope.editBlock = false;
-            $scope.editIndex = "";
+            $scope.editIndex = '';
 
 
             $scope.editTablet = function (index, name, model, price, display, ram) {
@@ -1341,7 +1513,7 @@ app.directive('adminTablets', function () {
                 };
                 $http.put('http://localhost:8000/tablets/' + $scope.editIndex, obj).then(function successCallback(response) {
                     console.log('success');
-                    $scope.editIndex = "";
+                    $scope.editIndex = '';
                     $scope.editTabletName = '';
                     $scope.editTabletModel = '';
                     $scope.editTabletPrice = '';
@@ -1355,7 +1527,7 @@ app.directive('adminTablets', function () {
                     .then(function successCallback(response) {
                         $scope.tablets = response.data;
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
 
             }
@@ -1373,25 +1545,47 @@ app.directive('adminHeadphones', function () {
         controller: function ($scope, $http) {
             //    ADD NEW HEADPHONE
             $scope.addNewHeadphone = function () {
+                if ($scope.headphones[0] == undefined) {
+                    $scope.imgNumberName = $scope.headphones.length + 1 + 'h';
+                } else {
+                    $scope.imgNumberName = $scope.headphones[$scope.headphones.length - 1].id + 1 + 'h';
+                };
+                //Завантаження зображення
+                var fd = new FormData();
+                fd.append($scope.imgNumberName, $scope.headphoneImg);
+                $http.post('http://localhost:8000/images', fd, {
+                        transformRequest: angular.identity,
+                        headers: {
+                            'Content-Type': undefined
+                        }
+                    })
+                    .then(function successCallback() {
+                        console.log('Uploaded!');
+                    }, function errorCallback(response) {
+                        console.log('Error!!!' + response.err);
+                    });
+
+
                 var headphone = {
                     name: $scope.newHeadphoneName,
                     model: $scope.newHeadphoneModel,
                     price: $scope.newHeadphonePrice,
                     connection: $scope.newHeadphoneConnection,
-                    weight: $scope.newHeadphoneWeight
+                    weight: $scope.newHeadphoneWeight,
+                    src: $scope.imgNumberName
                 }
 
                 $http.post('http://localhost:8000/headphones', headphone)
                     .then(function successCallback(response) {
-                        console.log("Success!");
+                        console.log('Success!');
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
                 $http.get('http://localhost:8000/headphones')
                     .then(function successCallback(response) {
                         $scope.headphones = response.data;
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
                 $scope.newHeadphoneName = '';
                 $scope.newHeadphoneModel = '';
@@ -1400,21 +1594,85 @@ app.directive('adminHeadphones', function () {
                 $scope.newHeadphoneWeight = '';
             }
             //    DELETE
-            $scope.removeHeadphone = function (id) {
+            $scope.removeHeadphone = function (id, src) {
 
                 $http.delete('http://localhost:8000/headphones/' + id).then(function successCallback(response) {
-                    console.log('success')
+                    console.log('success');
+                    $http.delete('http://localhost:8000/headphoneImg/' + src).then(function successCallback(response) {
+                        console.log('success')
+                    }, function errorCallback(response) {
+                        console.log('Error' + response.err)
+                    })
                 }, function errorCallback(response) {
                     console.log('Error' + response.err)
                 })
 
+
+
                 $http.get('http://localhost:8000/headphones')
                     .then(function successCallback(response) {
-                        $scope.headphones = response.data;
+                        $scope.tablets = response.data;
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
             }
+
+            $scope.countChanges = 3;
+            var newAdrrImg = '';
+            $scope.editHeadphoneImg = function (src, id) {
+                let changeSrc = src.split('-');
+                $scope.editHeadphoneImgShow = true;
+                console.log(src, id);
+                $scope.submitHeadphoneEditImg = function () {
+
+                    //                    Завантаження зображення
+                    var fd = new FormData();
+                    if (changeSrc[1] == undefined) {
+                        newAdrrImg = src + '-' + $scope.countChanges
+                    } else {
+                        $scope.countChanges += Number(changeSrc[1]);
+                        newAdrrImg = changeSrc[0] + '-' + $scope.countChanges;
+                        $scope.countChanges = 3;
+                    }
+                    console.log(newAdrrImg)
+                    fd.append(newAdrrImg, $scope.editHeadphoneImgModel);
+                    $http.post('http://localhost:8000/images', fd, {
+                            transformRequest: angular.identity,
+                            headers: {
+                                'Content-Type': undefined
+                            }
+                        })
+                        .then(function successCallback() {
+                            console.log('Uploaded!');
+                        }, function errorCallback(response) {
+                            console.log('Error!!!' + response.err);
+                        })
+
+                    var headphone = {
+                        src: newAdrrImg
+                    }
+                    $http.put('http://localhost:8000/headphoneImgEdit/' + src, headphone).then(function successCallback(response) {
+                        console.log('success');
+                        $scope.editHeadphoneImgShow = false;
+                    }, function errorCallback(response) {
+                        console.log('Error ' + response.err)
+                    })
+                    $http.delete('http://localhost:8000/headphoneImg/' + src).then(function successCallback(response) {
+                        console.log('success')
+                    }, function errorCallback(response) {
+                        console.log('Error' + response.err)
+                    })
+                    $http.get('http://localhost:8000/headphones')
+                        .then(function successCallback(response) {
+                            $scope.headphones = response.data;
+                        }, function errorCallback(response) {
+                            console.log('Error!!!' + response.err);
+                        });
+
+
+                }
+            }
+
 
             //    EDIT HEADPHONE
             $scope.newHeadphoneName = '';
@@ -1423,7 +1681,7 @@ app.directive('adminHeadphones', function () {
             $scope.newHeadphoneConnection = '';
             $scope.newHeadphoneWeight = '';
             $scope.editBlock = false;
-            $scope.editIndex = "";
+            $scope.editIndex = '';
 
 
             $scope.editHeadphone = function (index, name, model, price, connection, weight) {
@@ -1446,7 +1704,7 @@ app.directive('adminHeadphones', function () {
                 };
                 $http.put('http://localhost:8000/headphones/' + $scope.editIndex, obj).then(function successCallback(response) {
                     console.log('success');
-                    $scope.editIndex = "";
+                    $scope.editIndex = '';
                     $scope.editHeadphoneName;
                     $scope.editHeadphoneModel;
                     $scope.editHeadphonePrice;
@@ -1460,7 +1718,7 @@ app.directive('adminHeadphones', function () {
                     .then(function successCallback(response) {
                         $scope.headphones = response.data;
                     }, function errorCallback(response) {
-                        console.log("Error!!!" + response.err);
+                        console.log('Error!!!' + response.err);
                     });
 
             }

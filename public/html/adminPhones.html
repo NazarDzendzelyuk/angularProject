@@ -15,6 +15,8 @@
                 <input type="text" class="form-control" id="newCamera" ng-model='newCamera'>
                 <label for="newRam">Ram:</label>
                 <input type="text" class="form-control" id="newRam" ng-model='newRam'>
+                <input type="file" file-model='phoneImg'>
+
             </div>
         </div>
     </div>
@@ -50,7 +52,10 @@
     </div>
     <hr>
     <div class="row">
-        <div class="col-md-2">
+       <div class="col-md-1">
+            <h5>Edit img</h5>
+        </div>
+        <div class="col-md-1">
             <h5>IMG</h5>
         </div>
 
@@ -81,16 +86,24 @@
     </div>
     <div class="good" ng-repeat='phone in phones | filter:search | startFrom:currentPhonePage*pageSize | limitTo:pageSize'>
         <div class="row">
-            <div class="col-md-2">IMG</div>
+            <div class="col-md-1">
+                <button ng-click='editPhoneImg(phone.src, phone.id)' class="btn btn-submit">Edit img</button>
+            </div>
+            <div class="col-md-1"> <img src="../uploads/{{phone.src}}" height="80">
+            </div>
             <div class="col-md-1">{{phone.name}}</div>
             <div class="col-md-1">{{phone.model}}</div>
             <div class="col-md-1">{{phone.price}}</div>
             <div class="col-md-1">{{phone.display}}</div>
             <div class="col-md-1">{{phone.camera}}</div>
             <div class="col-md-1">{{phone.ram}}</div>
-            <div class="col-md-2"><button class="btn btn-danger" ng-click='removePhone(phone.id)'>Delete</button></div>
+            <div class="col-md-2"><button class="btn btn-danger" ng-click='removePhone(phone.id,phone.src)'>Delete</button></div>
             <div class="col-md-2"><button class="btn btn-warning" ng-click='editPhone(phone.id, phone.name,phone.model,phone.price, phone.display, phone.camera, phone.ram)'>Edit</button></div>
         </div>
+    </div>
+    <div ng-show='editPhoneImgShow'>
+    <input type="file" file-model='editPhoneImgModel'>
+    <input type="button" class="btn btn-success" value="Ok" ng-click='submitPhoneEditImg()'>
     </div>
     <div class="row" ng-show='editBlock'>
         <div class="col-md-3"></div>

@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const server = require('http').createServer(app);
@@ -31,9 +31,12 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(cors());
 
-io.sockets.on('connection', function (socket) {
+io.sockets.on('connection', function (socket, cart) {
     connections.push(socket);
     console.log('Connected: %s socket connected', connections.length);
+    io.sockets.emit('cart', {
+        cart: cart
+    })
 
     //    DISCONNECT
     socket.on('disconnect', function (data) {
@@ -54,7 +57,6 @@ io.sockets.on('connection', function (socket) {
         })
     })
     socket.on('new user', function (data) {
-        console.log(data);
         socket.name = data;
         arr.push(socket.name);
     })
@@ -107,17 +109,17 @@ app.post('/login', function (req, res) {
         if (err) throw err;
         if (rows[0] != undefined) {
             if (rows[0].password == req.body.password) {
-                res.status(200).send("welcome");
+                res.status(200).send('welcome');
                 connection.query('UPDATE users SET status = "1" WHERE id = ?', rows[0].id,
                     function (err) {
                         if (err) throw err;
                     }
                 );
             } else {
-                res.status(200).send("wrong password");
+                res.status(200).send('wrong password');
             }
         } else {
-            res.status(200).send("wrong login");
+            res.status(200).send('wrong login');
         }
 
     });
@@ -141,6 +143,7 @@ let phones = function () {
         'display int(11), ' +
         'camera int(11), ' +
         'ram int(11), ' +
+        'src varchar(150),' +
         'PRIMARY KEY(id) )',
         function (err) {
             if (err) throw err;
@@ -187,7 +190,20 @@ app.put('/phones/:id', function (req, res) {
     })
     res.sendStatus(200);
 })
-
+app.put('/phoneImgEdit/:src', function (req, res) {
+    connection.query('UPDATE phones SET src= ? WHERE src= ?', [req.body.src, req.params.src], function (err) {
+        if (err) throw err;
+        console.log('tablet updated id: ' + req.params.src)
+    })
+    res.sendStatus(200);
+})
+app.delete('/phoneImg/:src', function (req, res) {
+    fs.unlink('public/uploads/' + req.params.src + '', (err) => {
+        if (err) throw err;
+        console.log('successfully deleted');
+    });
+    res.sendStatus(200);
+})
 let tablets = function () {
     connection.query('' +
         'CREATE TABLE IF NOT EXISTS tablets (' +
@@ -244,6 +260,7 @@ app.delete('/tabletImg/:src', function (req, res) {
         if (err) throw err;
         console.log('successfully deleted');
     });
+    res.sendStatus(200);
 })
 
 app.put('/tablets/:id', function (req, res) {
@@ -270,6 +287,7 @@ let headphones = function () {
         'price int(11), ' +
         'connection varchar(50), ' +
         'weight varchar(50), ' +
+        'src varchar(150),' +
         'PRIMARY KEY(id) )',
         function (err) {
             if (err) throw err;
@@ -316,6 +334,21 @@ app.put('/headphones/:id', function (req, res) {
     })
     res.sendStatus(200);
 })
+
+app.put('/headphoneImgEdit/:src', function (req, res) {
+    connection.query('UPDATE headphones SET src= ? WHERE src= ?', [req.body.src, req.params.src], function (err) {
+        if (err) throw err;
+        console.log('tablet updated id: ' + req.params.src)
+    })
+    res.sendStatus(200);
+});
+app.delete('/headphoneImg/:src', function (req, res) {
+    fs.unlink('public/uploads/' + req.params.src + '', (err) => {
+        if (err) throw err;
+        console.log('successfully deleted');
+    });
+    res.sendStatus(200);
+});
 
 let comments = function () {
     connection.query('' +
@@ -407,6 +440,7 @@ let cart = function () {
         'model varchar(50), ' +
         'name varchar(50), ' +
         'price int(11), ' +
+        'src varchar(150),' +
         'total int(11), ' +
         'PRIMARY KEY(id) )',
         function (err) {
@@ -423,21 +457,13 @@ app.post('/addPhoneToCart', function (req, res) {
     })
     res.sendStatus(200);
 })
-app.get('/addPhoneToCart/:email', function (req, res) {
+app.get('/getCart/:email', function (req, res) {
     connection.query('SELECT * FROM cart  WHERE email = ?', req.params.email, function (err, rows) {
         if (err) throw err;
-        console.log('get good, email: ' + req.params.email);
         res.status(200).send(rows);
     });
 });
-//app.put('/addPhoneToCart/:email', function (req, res) {
-//    connection.query('UPDATE cart SET amount= ? WHERE email= ?', [req.body.amount, req.params.email], function (err) {
-//        if (err) throw err;
-//        console.log('good updated id: ' + req.params.id)
-//    })
-//    res.sendStatus(200);
-//})
-app.put('/addPhoneToCart/:email', function (req, res) {
+app.put('/updateCart/:email', function (req, res) {
     connection.query('UPDATE cart SET total= ? WHERE email= ?', [req.body.total, req.params.email], function (err) {
         if (err) throw err;
         console.log('good updated id: ' + req.params.name)
@@ -445,10 +471,53 @@ app.put('/addPhoneToCart/:email', function (req, res) {
     res.sendStatus(200);
 })
 
-app.delete('/addPhoneToCart/:id', function (req, res) {
+app.delete('/deleteFromCart/:id', function (req, res) {
     connection.query('DELETE FROM cart WHERE id= ?', req.params.id, function (err) {
         if (err) throw err;
         console.log('good deleted with id: ' + req.body.id)
+    })
+    res.sendStatus(200);
+})
+//TABLETS
+app.post('/addTabletToCart', function (req, res) {
+    connection.query('INSERT INTO cart SET ?', req.body, function (err, result) {
+        if (err) throw err;
+        console.log('added to cart: ' + result.insertId)
+    })
+    res.sendStatus(200);
+})
+app.post('/addHeadphoneToCart', function (req, res) {
+    connection.query('INSERT INTO cart SET ?', req.body, function (err, result) {
+        if (err) throw err;
+        console.log('added to cart: ' + result.insertId)
+    })
+    res.sendStatus(200);
+})
+let boughtgoods = function () {
+    connection.query('' +
+        'CREATE TABLE IF NOT EXISTS boughtgoods (' +
+        'id int(11) NOT NULL AUTO_INCREMENT,' +
+        'firstname varchar(50), ' +
+        'lastname varchar(50), ' +
+        'email varchar(50), ' +
+        'phonenumber int(15), ' +
+        'totalprice int(11), ' +
+        'city varchar(150),' +
+        'street varchar(50), ' +
+        'productname varchar(50), ' +
+        'productmodel varchar(50), ' +
+        'PRIMARY KEY(id) )',
+        function (err) {
+            if (err) throw err;
+            console.log('CREATE TABLE IF NOT EXISTS boughtgoods')
+        });
+};
+
+boughtgoods();
+app.post('/submitPurchase', function (req, res) {
+    connection.query('INSERT INTO boughtgoods SET ?', req.body, function (err, result) {
+        if (err) throw err;
+        console.log('added to cart: ' + result.insertId)
     })
     res.sendStatus(200);
 })

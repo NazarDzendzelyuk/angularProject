@@ -1,0 +1,109 @@
+    <div ng-show='checkoutBlock'>
+       <div class="row backToChackout">
+        <div class="col-md-4" ng-click='backToShopping()'><h4>
+            <i class="fa fa-arrow-left" aria-hidden="true"> Back to shopping</i></h4>
+        </div>
+    </div>
+    <div class="row checkoutItems">
+        <div class="col-md-7">
+            <div class="row text-center">
+                <div class="col-md-3">
+                    <h4>Model</h4>
+                </div>
+                <div class="col-md-3">
+                    <h4>Price</h4>
+                </div>
+                <div class="col-md-3">
+                    <h4>Img</h4>
+                </div>
+                <div class="col-md-3">
+                    <h4>Remove</h4>
+                </div>
+
+            </div>
+            <div class="row text-center" ng-repeat='good in cart'>
+                <div class="col-md-3">
+                    <h5>{{good.model}}</h5>
+                </div>
+                <div class="col-md-3">
+                    <h5>{{good.price}}</h5>
+                </div>
+                <div class="col-md-3"><img src="../uploads/{{good.src}}" alt="" width="55%"></div>
+                <div class="col-md-3">
+                    <button ng-click='removeFromCart(good.id)' class="btn btn-danger">Remove</button>
+                </div>
+            </div>
+            <div class="row text-center totalPrice">
+                <div class="col-md-12">
+                    <h4>Total price: {{total}}$</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <h4>Billing information</h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-right">
+                    <form novalidate>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h6><label for="fName">First name:</label></h6>
+                            </div>
+                            <div class="col-md-2">
+                                <h6><input type="text" ng-model='buyerFName' id="fName"></h6>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h6><label for="LName">Last name:</label></h6>
+                            </div>
+                            <div class="col-md-2">
+                                <h6><input type="text" ng-model='buyerLName' id="LName"></h6>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h6><label for="Email">Email:</label></h6>
+                            </div>
+                            <div class="col-md-2">
+                                <h6><input type="text" ng-model='buyerEmail' id="Email"></h6>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h6><label for="number">Phone number:</label></h6>
+                            </div>
+                            <div class="col-md-2">
+                                <h6><input type="tel" ng-model='buyerPNumber' id="number"></h6>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h6><label for="city">City:</label></h6>
+                            </div>
+                            <div class="col-md-2">
+                                <h6><input type="text" ng-model='buyerCity' id="city"></h6>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h6><label for="street">Street, app№:</label></h6>
+                            </div>
+                            <div class="col-md-2">
+                                <h6><input type="tel" ng-model='buyerStreet' id="street"></h6>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-primary" ng-click='submitPurchase()'>Submit purchase</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>

@@ -2,8 +2,8 @@
     <header class="header">
         <nav class="header--nav">
             <ul>
-                <li class="cart"><a href="#" >Cart</a>
-                    <div class="cartAmount"> {{phonesInCart.length}}</div>
+                <li class="cart"><a href="#">Cart</a>
+                    <div class="cartAmount"> {{cart.length}}</div>
                     <ul class="submenu">
                         <li class="row text-center">
                             <div class="col-md-4 col-sm-3">Name</div>
@@ -12,7 +12,7 @@
                                 Remove
                             </div>
                         </li>
-                        <li class="row text-center" ng-repeat='good in phonesInCart'>
+                        <li class="row text-center" ng-repeat='good in cart'>
                             <div class="col-md-4 col-sm-3">{{good.model}}</div>
                             <div class="col-md-4 col-sm-3">{{good.price}}</div>
                             <div class="col-md-4 col-sm-3"><i class="fa fa-times" aria-hidden="true" ng-click='removeFromCart(good.id)'></i>
@@ -20,6 +20,7 @@
                         </li>
                         <li class="row text-center totalAmount">
                             <div class="col-md-12">Total price: {{total}}</div>
+                            <div class="col-md-12 "><button class="btn btn-danger" ng-click='checkout()'>Checkout</button></div>
                         </li>
                     </ul>
                 </li>

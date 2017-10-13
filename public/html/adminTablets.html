@@ -14,7 +14,6 @@
                 <label for="newRam">Ram:</label>
                 <input type="text" class="form-control" id="newRam" ng-model='newTabletRam'>
                 <input type="file" file-model='tabletImg'>
-                <img src="{{file}}" alt="">
             </div>
         </div>
     </div>
@@ -50,7 +49,7 @@
     </div>
     <hr>
     <div class="row">
-       <div class="col-md-1">
+        <div class="col-md-1">
             <h5>Edit img</h5>
         </div>
         <div class="col-md-1">
@@ -79,10 +78,10 @@
             <h5>Edit</h5>
         </div>
     </div>
-    <div class="good" ng-repeat='tablet in tablets | filter:search | startFrom:currentTabletPage*pageSize | limitTo:pageSize'>
+    <div class="good" ng-repeat='tablet in tablets | filter:search | startFrom:currentTabletPage*pageSize  | limitTo:pageSize'>
         <div class="row">
-           <div class="col-md-1">
-           <button ng-click='editImg(tablet.src, tablet.id)' class="btn btn-submit">Edit img</button>
+            <div class="col-md-1">
+                <button ng-click='editImg(tablet.src, tablet.id)' class="btn btn-submit">Edit img</button>
             </div>
             <div class="col-md-1">
                 <img src="../uploads/{{tablet.src}}" height="80">
@@ -93,13 +92,13 @@
             <div class="col-md-1">{{tablet.display}}</div>
             <div class="col-md-1">{{tablet.ram}}</div>
             <div class="col-md-2"><button class="btn btn-danger" ng-click='removeTablet(tablet.id, tablet.src)'>Delete</button></div>
-            <div class="col-md-2"><button class="btn btn-warning" ng-click='editTablet(tablet.id, tablet.name,tablet.model, tablet.price, tablet.display, tablet.ram,tablet.src)'>Edit</button></div>
+            <div class="col-md-2"><button class="btn btn-warning" ng-click='editTablet(tablet.id, tablet.name,tablet.model, tablet.price, tablet.display, tablet.ram)'>Edit</button></div>
 
         </div>
     </div>
     <div ng-show='editImgShow'>
-    <input type="file" file-model='editImgModel'>
-    <input type="button" class="btn btn-success" value="Ok" ng-click='submitEditImg()'>
+        <input type="file" file-model='editImgModel'>
+        <input type="button" class="btn btn-success" value="Ok" ng-click='submitEditImg()'>
     </div>
 
     <div class="row" ng-show='editBlock'>

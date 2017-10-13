@@ -13,6 +13,8 @@
                 <input type="text" class="form-control" id="newConnection" ng-model='newHeadphoneConnection'>
                 <label for="newWeight">Weight:</label>
                 <input type="text" class="form-control" id="newWeight" ng-model='newHeadphoneWeight'>
+                <input type="file" file-model='headphoneImg'>
+
             </div>
         </div>
     </div>
@@ -48,7 +50,10 @@
     </div>
     <hr>
     <div class="row">
-        <div class="col-md-2">
+        <div class="col-md-1">
+            <h5>Edit img</h5>
+        </div>
+        <div class="col-md-1">
             <h5>IMG</h5>
         </div>
 
@@ -74,17 +79,25 @@
             <h5>Edit</h5>
         </div>
     </div>
-    <div class="good" ng-repeat='headphone in headphones | filter:search | orderBy:sortByPrice | startFrom:currentHeadphonePage*pageSize | limitTo:pageSize'>
+    <div class="good" ng-repeat='headphone in headphones | filter:search | startFrom:currentHeadphonePage*pageSize | orderBy:sortByPrice | limitTo:pageSize'>
         <div class="row">
-            <div class="col-md-2">IMG</div>
+            <div class="col-md-1">
+                <button ng-click='editHeadphoneImg(headphone.src, headphone.id)' class="btn btn-submit">Edit img</button>
+            </div>
+            <div class="col-md-1"> <img src="../uploads/{{headphone.src}}" height="80">
+            </div>
             <div class="col-md-2">{{headphone.name}}</div>
             <div class="col-md-1">{{headphone.model}}</div>
             <div class="col-md-1">{{headphone.price}}</div>
             <div class="col-md-1">{{headphone.connection}}</div>
             <div class="col-md-1">{{headphone.weight}}</div>
-            <div class="col-md-2"><button class="btn btn-danger" ng-click='removeHeadphone(headphone.id)'>Delete</button></div>
+            <div class="col-md-2"><button class="btn btn-danger" ng-click='removeHeadphone(headphone.id,headphone.src)'>Delete</button></div>
             <div class="col-md-2"><button class="btn btn-warning" ng-click='editHeadphone(headphone.id, headphone.name, headphone.model, headphone.price, headphone.connection, headphone.weight)'>Edit</button></div>
         </div>
+    </div>
+    <div ng-show='editHeadphoneImgShow'>
+    <input type="file" file-model='editHeadphoneImgModel'>
+    <input type="button" class="btn btn-success" value="Ok" ng-click='submitHeadphoneEditImg()'>
     </div>
     <div class="row" ng-show='editBlock'>
         <div class="col-md-3"></div>

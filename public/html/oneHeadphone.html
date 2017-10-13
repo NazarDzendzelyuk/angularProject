@@ -11,29 +11,21 @@
             <p>{{headphone.connection}} </p>
             <h5>Weight:</h5>
             <p>{{headphone.weight}} pounds</p>
-            <input type="button" class="btn btn-success" value="Add to cart">
+            <input type="button" class="btn btn-success" value="Add to cart" ng-click='addHeadphoneToCart(headphone.name, headphone.price, headphone.model,headphone.src)'>
         </div>
     </div>
     <div class="clear"></div>
     <div class="col-md-5">
-        <div class="gallery">
-            <a href="/img/headphone.jpg" class="image">
-                <img src="/img/headphone.jpg" alt="" width="70%" height="350"></a><br>
-            <a href="/img/headphone1.jpg" class="image">
-                <img src="/img/headphone1.jpg" alt="" width="160" height="140"></a>
-            <a href="/img/headphone2.png" class="image">
-                <img src="/img/headphone2.png" alt="" width="140" height="140"></a>
-            <a href="/img/headphone3.jpg" class="image">
-                <img src="/img/headphone3.jpg" alt="" width="140" height="140"></a>
-            <a href="/img/headphone4.jpg" class="image">
-                <img src="/img/headphone4.jpg" alt="" width="140" height="140"></a>
-        </div>
+        <div class="gallery" ng-repeat='headphone in oneHeadphone'>
+            <div href="../uploads/{{headphone.src}}" class="image">
+                <img src="../uploads/{{headphone.src}}" alt="" width="70%" height="400"></div>
+            </div>
     </div>
     <div class="col-md-3 text-center">
         <h3>Comments</h3>
 
         <ul>
-            <li ng-repeat='comment in comments| orderBy:sortByDate | startFrom:currentPage*pageSize | limitTo:4'>
+            <li ng-repeat='comment in comments| orderBy:sortByDate  | limitTo:4'>
                 <p>{{comment.time | date:" dd/MM/yy hh:mm:ss"}}</p>
                 <p>{{comment.email}}: {{comment.comment}}
                     <p>

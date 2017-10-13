@@ -634,6 +634,7 @@ form[name='chatForm'] span {
 .gallery {
     text-align: center;
     border: 1px solid lightgrey;
+    height: 55vh;
 }
 
 .fullInfo {
@@ -650,4 +651,17 @@ form[name='chatForm'] span {
 
 .back {
     height: 480px;
+}
+.checkout{
+    height: 50vh;
+}
+.checkoutItems{
+    margin-top: 5vh;
+}
+.totalPrice{
+    margin-top: 40px;
+}
+.backToChackout{
+    margin-top: 5vh;
+    margin-left: 30px;
 }

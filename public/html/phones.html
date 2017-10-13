@@ -1,7 +1,7 @@
 <div ng-hide='allPhones'>
     <div class="row goods">
         <div class="col-md-4 item" ng-repeat='phone in phones | filter:search | orderBy:sortByPrice | startFrom:currentPhonePage*pageSize | limitTo:pageSize' ng-click='info(phone.name)'>
-            <a href=""><img src='../img/phone.png' style="width: 87px"></a>
+            <a href=""><img src='../uploads/{{phone.src}}' height='50%' ></a>
             <h6>{{phone.model}}</h6>
             <h6>Price: {{phone.price}} $</h6>
 
@@ -16,7 +16,7 @@
     <!--    PAGINATION-->
     <div class="row">
         <div class="col-md-12 text-center">
-            <button ng-disabled="currentPhonePage == 0" ng-click="currentPhonePage=currentPhonePage-1" id="previousPage" class="btn btn-submit" scroll-on-click href="#scroll">Previous</button> {{currentPhonePage+1}}/{{numberOfPhonePages()}}
+            <button ng-disabled="currentPhonePage == 0" ng-click="currentPhonePage=currentPhonePage-1" id="previousPage" class="btn btn-submit" >Previous</button> {{currentPhonePage+1}}/{{numberOfPhonePages()}}
             <button ng-disabled="currentPhonePage >= getPhones().length/pageSize - 1" ng-click="currentPhonePage=currentPhonePage+1" id="nextPage" class="btn btn-submit" scroll-on-click href="#scroll">Next</button>
         </div>
     </div>
