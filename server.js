@@ -36,13 +36,13 @@ io.sockets.on('connection', function (socket, cart) {
     console.log('Connected: %s socket connected', connections.length);
     io.sockets.emit('cart', {
         cart: cart
-    })
+    });
 
     //    DISCONNECT
     socket.on('disconnect', function (data) {
         connections.splice(connections.indexOf(socket), 1);
         console.log('Disconnected: %s socket connected', connections.length)
-    })
+    });
 
     socket.on('send message', function (data, userName) {
         console.log(data);
@@ -55,13 +55,13 @@ io.sockets.on('connection', function (socket, cart) {
             msg: data,
             user: socket.name
         })
-    })
+    });
     socket.on('new user', function (data) {
         socket.name = data;
         arr.push(socket.name);
     })
 
-})
+});
 
 
 
@@ -93,17 +93,17 @@ users();
 app.get('/signUp', function (req, res) {
     connection.query('SELECT * FROM users', function (err, response) {
         if (err) throw err;
-        console.log('get all users, length' + response.length)
+        console.log('get all users, length' + response.length);
         res.status(200).send(response);
     })
-})
+});
 app.post('/signUp', function (req, res) {
     connection.query('INSERT INTO users SET ?', req.body, function (err, result) {
         if (err) throw err;
         console.log('user successfully added: ' + result.insertId)
-    })
+    });
     res.sendStatus(200);
-})
+});
 app.post('/login', function (req, res) {
     connection.query('SELECT * FROM users  WHERE email = ?', req.body.email, function (err, rows) {
         if (err) throw err;
@@ -155,10 +155,10 @@ phones();
 app.get('/phones', function (req, res) {
     connection.query('SELECT * FROM phones', function (err, response) {
         if (err) throw err;
-        console.log('get all phones, length' + response.length)
+        console.log('get all phones, length' + response.length);
         res.status(200).send(response);
     })
-})
+});
 app.get('/phones/:name', function (req, res) {
     connection.query('SELECT * FROM phones  WHERE name = ?', req.params.name, function (err, rows) {
         if (err) throw err;
@@ -167,13 +167,13 @@ app.get('/phones/:name', function (req, res) {
     });
 });
 app.post('/phones', function (req, res) {
-    console.log(req.body)
+    console.log(req.body);
     connection.query('INSERT INTO phones SET ?', req.body, function (err, result) {
         if (err) throw err;
         console.log('phone successfully added: ' + result.insertId)
-    })
+    });
     res.sendStatus(200);
-})
+});
 
 app.delete('/phones/:id', function (req, res) {
     connection.query('DELETE FROM phones WHERE id= ?', req.params.id, function (err) {
